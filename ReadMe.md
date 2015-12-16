@@ -32,7 +32,7 @@ Windows x64
     -f     (fastest)         character zero (48)        fastest generator
     -r     (restrict)        characters 33 to 126       safe for terminal output
     -c     (crypto)          crypto-sourced bytes       Linux: /dev/urandom, Windows: CryptGenRandom
-                                                       (much slower byte generation)
+                                                            (much slower byte generation)
 
     size  1K, 100M, 3G
 
