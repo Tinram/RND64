@@ -34,7 +34,7 @@ Windows x64
     -c     (crypto)          crypto-sourced bytes       Linux: /dev/urandom, Windows: CryptGenRandom
                                                             (much slower byte generation)
 
-    size  1K, 100M, 3G
+    size   1K, 100M, 3G
 
 
 ### Usage Examples
