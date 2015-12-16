@@ -4,9 +4,9 @@
 ### 64-bit multi-threading random data generator
 
 
-#### RND64 v.0.28
+##### RND64 v.0.28
 
-#### Windows and Linux
+##### Linux and Windows
 
 
 ## Purpose
@@ -28,10 +28,10 @@ Windows x64
 
 #### Options
 
-    -a    (all)         characters 1 to 255        includes control codes
-    -f    (fastest)     character zero (48)        fastest generator
-    -r    (restrict)    characters 33 to 126       safe for terminal output
-    -c    (crypto)      crypto-sourced bytes       Linux: /dev/urandom, Windows: CryptGenRandom
+    -a     (all)             characters 1 to 255        includes control codes
+    -f     (fastest)         character zero (48)        fastest generator
+    -r     (restrict)        characters 33 to 126       safe for terminal output
+    -c     (crypto)          crypto-sourced bytes       Linux: /dev/urandom, Windows: CryptGenRandom
                                                        (much slower byte generation)
 
     size  1K, 100M, 3G
@@ -49,7 +49,7 @@ Windows x64
     rnd -a 1k | nc 192.168.1.20 80        pipe 1kB of random bytes to *netcat* to send to 192.168.1.20 on port 80 (test server response)
 
 
-##### WARNING: Be careful of the amount of data generated in regards to the available memory of your PC for creating data, and the age and performance of your hard-drive for writing data.  A file dump of more than 1GB can be brutal!
+###### WARNING: Be careful of the amount of data generated in regards to the available memory of your PC for creating data, and the age and performance of your hard-drive for writing data.  A file dump of more than 1GB can be brutal!
 
 
 ## Build
@@ -76,15 +76,15 @@ Compile with GCC x64:
 
 The switches `-a` and `-c` are dangerous options when both a filename and pipe symbol are omitted. The wide range of output bytes, including control characters, are printed in the terminal, which can cause the terminal to lock or crash (especially on Windows).
 
-On both Windows and Linux, it's more convenient for rnd64 to be available from any directory location via the PATH system variable (rather than copying the executable file to the directory where needed).
-
-#### Windows
-
-(Windows/Super key + Break) > Advanced tab > Environmental Variables button > click Path line > Edit button > Variable value - append at the end of existing line information: *C:\directory paths\to rnd64.exe\;*
+On both Linux and Windows, it's more convenient for rnd64 to be available from any directory location via the PATH system variable (rather than copying the executable file to the directory where needed).
 
 #### Linux
 
 Move the rnd64 executable to a location such as */usr/local/bin*  (location must be present in $PATH).
+
+#### Windows
+
+(Windows/Super key + Break) > Advanced tab > Environmental Variables button > click Path line > Edit button > Variable value - append at the end of existing line information: *C:\directory paths\to rnd64.exe\;*
 
 
 ## License
