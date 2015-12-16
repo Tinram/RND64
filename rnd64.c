@@ -8,7 +8,7 @@
 	* @author       Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
 	* @version      0.28 mt
-	* @license       GNU GPL version 3.0 (GPL v3); http://www.gnu.org/licenses/gpl.html
+	* @license       GNU GPL version 3.0 (GPL v3); https://www.gnu.org/licenses/gpl-3.0.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
 	* Compile (GCC x64):
