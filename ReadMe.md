@@ -4,7 +4,7 @@
 ### 64-bit multi-threading random data generator
 
 
-##### RND64 v.0.28
+##### RND64 v.0.29
 
 ##### Linux and Windows
 
@@ -58,11 +58,11 @@ Compile with GCC x64:
 
 ### Linux
 
-    gcc rnd64.c -o rnd64 -lpthread -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -s
+    gcc rnd64.c -o rnd64 -lpthread -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -std=gnu99 -s
 
 ### Windows
 
-    gcc rnd64.c -o rnd64.exe -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -s 
+    gcc rnd64.c -o rnd64.exe -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -std=c99 -s
 
 #### Further Optimisation
 

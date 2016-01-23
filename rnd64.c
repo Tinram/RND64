@@ -3,19 +3,19 @@
 	* RND64
 	* rnd64.c
 	*
-	* Generate large files (4GB+) and large streams of random data as quickly as possible.
+	* Generate large files (4GB+, non-sparse) and large streams of random data as quickly as possible.
 	*
 	* @author       Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
-	* @version      0.28 mt
+	* @version      0.29 mt
 	* @license       GNU GPL version 3.0 (GPL v3); https://www.gnu.org/licenses/gpl-3.0.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
 	* Compile (GCC x64):
-	*                    Linux:      gcc rnd64.c -o rnd64 -lpthread -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -s
-	*                    Windows:    gcc rnd64.c -o rnd64.exe -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -s 
+	*                    Linux:      gcc rnd64.c -o rnd64 -lpthread -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -std=gnu99 -s
+	*                    Windows:    gcc rnd64.c -o rnd64.exe -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -std=c99 -s
 	*
-	*                    further CPU optimisation:
+	*                    further CPU optimisation examples:
 	*                                -march=core-avx-i -mtune=core-avx-i        Intel Ivy Bridge
 	*                                -march=core-avx2 -mtune=core-avx2          Intel Haswell
 */
@@ -254,10 +254,13 @@ int main(int iArgCount, char* aArgV[]) {
 		uint64_t i = 0;
 		uint64_t iBytesLocal = iBytes;
 		char* pBuffer = (char*) buff;
-		unsigned int seed = (unsigned int) time(NULL);
+		static unsigned int iSeed = 3142;
+
+		/* seed rand_r() with a munger for each thread (time(), gettimeofday() unsuitable) */
+		iSeed += (((unsigned int) time(NULL)) * 0.2);
 
 		for (i = 0; i < iBytesLocal; i++) {
-			pBuffer[i] = (rand_r(&seed) % 254) + 1; /* avoid 0 */
+			pBuffer[i] = (rand_r(&iSeed) % 254) + 1; /* avoid 0 */
 		}
 
 		pBuffer[iBytesLocal] = '\0';
@@ -271,11 +274,15 @@ int main(int iArgCount, char* aArgV[]) {
 		uint64_t i = 0;
 		uint64_t iBytesLocal = iBytes;
 		char* pBuffer = (char*) buff;
-			/* unsigned int seed = (unsigned int) time(NULL); */
+		static unsigned int iSeed = 3142;
+
+		/* seed srand() with a munger for each thread (time(), GetTickCount() unsuitable) */
+		iSeed += (((unsigned int) time(NULL)) * 0.2);
+		srand(iSeed);
 
 		for (i = 0; i < iBytesLocal; i++) {
 			pBuffer[i] = (rand() % 254) + 1; /* avoid 0 */
-				/* pBuffer[i] = (rand_s(&seed) % 254) + 1; - thread-safe rand_s() (+ #define _CRT_RAND_S) created nasty thread lockups on Win */
+				/* pBuffer[i] = (rand_s(&iSeed) % 254) + 1; - thread-safe rand_s() (+ #define _CRT_RAND_S) created nasty thread lockups on Win */
 		}
 
 		pBuffer[iBytesLocal] = '\0';
@@ -299,10 +306,12 @@ int main(int iArgCount, char* aArgV[]) {
 		uint64_t i = 0;
 		uint64_t iBytesLocal = iBytes;
 		char* pBuffer = (char*) buff;
-		unsigned int seed = (unsigned int) time(NULL);
+		static unsigned int iSeed = 3142;
+
+		iSeed += (((unsigned int) time(NULL)) * 0.2);
 
 		for (i = 0; i < iBytesLocal; i++) {
-			pBuffer[i] = (rand_r(&seed) % 94) + 33;
+			pBuffer[i] = (rand_r(&iSeed) % 94) + 33;
 		}
 
 		pBuffer[iBytesLocal] = '\0';
@@ -316,6 +325,10 @@ int main(int iArgCount, char* aArgV[]) {
 		uint64_t i = 0;
 		uint64_t iBytesLocal = iBytes;
 		char* pBuffer = (char*) buff;
+		static unsigned int iSeed = 3142;
+
+		iSeed += (((unsigned int) time(NULL)) * 0.2);
+		srand(iSeed);
 
 		for (i = 0; i < iBytesLocal; i++) {
 			pBuffer[i] = (rand() % 94) + 33;
