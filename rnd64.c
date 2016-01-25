@@ -5,9 +5,9 @@
 	*
 	* Generate large files (4GB+, non-sparse) and large streams of random data as quickly as possible.
 	*
-	* @author       Martin Latter <copysense.co.uk>
+	* @author        Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
-	* @version      0.29 mt
+	* @version       0.30 mt
 	* @license       GNU GPL version 3.0 (GPL v3); https://www.gnu.org/licenses/gpl-3.0.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
@@ -256,11 +256,13 @@ int main(int iArgCount, char* aArgV[]) {
 		char* pBuffer = (char*) buff;
 		static unsigned int iSeed = 3142;
 
-		/* seed rand_r() with a munger for each thread (time(), gettimeofday() unsuitable) */
+		/* seed srand() with a munger for each thread (time(), gettimeofday() unsuitable) */
 		iSeed += (((unsigned int) time(NULL)) * 0.2);
+		srand(iSeed);
 
 		for (i = 0; i < iBytesLocal; i++) {
-			pBuffer[i] = (rand_r(&iSeed) % 254) + 1; /* avoid 0 */
+			pBuffer[i] = (rand() % 254) + 1; /* avoid 0 */
+				/* pBuffer[i] = (rand_r(&iSeed) % 254) + 1; (thread-safe, but creates repeating patterns on older GCC versions, despite munger) */
 		}
 
 		pBuffer[iBytesLocal] = '\0';
@@ -282,7 +284,6 @@ int main(int iArgCount, char* aArgV[]) {
 
 		for (i = 0; i < iBytesLocal; i++) {
 			pBuffer[i] = (rand() % 254) + 1; /* avoid 0 */
-				/* pBuffer[i] = (rand_s(&iSeed) % 254) + 1; - thread-safe rand_s() (+ #define _CRT_RAND_S) created nasty thread lockups on Win */
 		}
 
 		pBuffer[iBytesLocal] = '\0';
@@ -309,9 +310,10 @@ int main(int iArgCount, char* aArgV[]) {
 		static unsigned int iSeed = 3142;
 
 		iSeed += (((unsigned int) time(NULL)) * 0.2);
+		srand(iSeed);
 
 		for (i = 0; i < iBytesLocal; i++) {
-			pBuffer[i] = (rand_r(&iSeed) % 94) + 33;
+			pBuffer[i] = (rand() % 94) + 33;
 		}
 
 		pBuffer[iBytesLocal] = '\0';
@@ -459,9 +461,9 @@ void menu(char* pFilename) {
 	printf("\t\t%s [option] <size> [file]", pFilename);
 	printf("\n\t\t%s [option] <size> | <prog>", pFilename);
 	printf("\n\nOptions:");
-	printf("\n\t\t-a\t chars 1-255  (all)");
-	printf("\n\t\t-f\t single char  (fastest)");
-	printf("\n\t\t-r\t chars 33-126 (restrict)");
+	printf("\n\t\t-a\t chars 1-255    (all)");
+	printf("\n\t\t-f\t single char    (fastest)");
+	printf("\n\t\t-r\t chars 33-126   (restrict)");
 	printf("\n\t\t-c\t crypto bytes");
 	printf("\n\n\t\tsize\t 1K, 100M, 3G\n\n");
 }

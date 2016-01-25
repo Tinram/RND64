@@ -5,9 +5,9 @@
 	*
 	* Generate large files (4GB+, non-sparse) and large streams of random data as quickly as possible.
 	*
-	* @author       Martin Latter <copysense.co.uk>
+	* @author        Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
-	* @version      0.29 mt
+	* @version       0.30 mt
 	* @license       GNU GPL version 3.0 (GPL v3); http://www.gnu.org/licenses/gpl.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
@@ -32,7 +32,7 @@
 #endif
 
 
-#define RND64_VERSION "0.29 mt"
+#define RND64_VERSION "0.30 mt"
 
 
 #ifdef __linux
