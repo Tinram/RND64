@@ -7,7 +7,7 @@
 	*
 	* @author        Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
-	* @version       0.30 mt
+	* @version       0.31 mt
 	* @license       GNU GPL version 3.0 (GPL v3); https://www.gnu.org/licenses/gpl-3.0.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
@@ -54,6 +54,9 @@ int main(int iArgCount, char* aArgV[]) {
 		return EXIT_FAILURE;
 	}
 
+	/* create seed for rand() usage */
+	srand((unsigned int) time(NULL));
+
 	/* main variables */
 
 	/* detect number of CPU threads (logical cores, not physical cores, Intel i3 = 4: 2 cores + 2 threads) */
@@ -61,7 +64,6 @@ int main(int iArgCount, char* aArgV[]) {
 		iNumThreads = (unsigned int) get_nprocs();
 		pthread_t rThreadID[iNumThreads];
 	#elif _WIN64
-		srand((unsigned int) time(NULL));
 		DWORD dwThreadID;
 		SYSTEM_INFO siSysInfo;
 		GetSystemInfo(&siSysInfo);
@@ -254,15 +256,13 @@ int main(int iArgCount, char* aArgV[]) {
 		uint64_t i = 0;
 		uint64_t iBytesLocal = iBytes;
 		char* pBuffer = (char*) buff;
-		static unsigned int iSeed = 3142;
+		unsigned int iSeed = 0;
 
-		/* seed srand() with a munger for each thread (time(), gettimeofday() unsuitable) */
-		iSeed += (((unsigned int) time(NULL)) * 0.2);
-		srand(iSeed);
+		/* rand_r() seed for each thread (time() unsuitable) */
+		iSeed = rand();
 
 		for (i = 0; i < iBytesLocal; i++) {
-			pBuffer[i] = (rand() % 254) + 1; /* avoid 0 */
-				/* pBuffer[i] = (rand_r(&iSeed) % 254) + 1; (thread-safe, but creates repeating patterns on older GCC versions, despite munger) */
+			pBuffer[i] = (rand_r(&iSeed) % 254) + 1; /* avoid 0 */
 		}
 
 		pBuffer[iBytesLocal] = '\0';
@@ -278,7 +278,7 @@ int main(int iArgCount, char* aArgV[]) {
 		char* pBuffer = (char*) buff;
 		static unsigned int iSeed = 3142;
 
-		/* seed srand() with a munger for each thread (time(), GetTickCount() unsuitable) */
+		/* srand() seed munger for each thread (time(), GetTickCount(), and rand() unsuitable) */
 		iSeed += (((unsigned int) time(NULL)) * 0.2);
 		srand(iSeed);
 
@@ -307,13 +307,12 @@ int main(int iArgCount, char* aArgV[]) {
 		uint64_t i = 0;
 		uint64_t iBytesLocal = iBytes;
 		char* pBuffer = (char*) buff;
-		static unsigned int iSeed = 3142;
+		unsigned int iSeed = 0;
 
-		iSeed += (((unsigned int) time(NULL)) * 0.2);
-		srand(iSeed);
+		iSeed = rand();
 
 		for (i = 0; i < iBytesLocal; i++) {
-			pBuffer[i] = (rand() % 94) + 33;
+			pBuffer[i] = (rand_r(&iSeed) % 94) + 33;
 		}
 
 		pBuffer[iBytesLocal] = '\0';
