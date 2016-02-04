@@ -45,11 +45,11 @@ Windows x64
     rnd64 -a 1k test.txt                  output 1kB of random bytes in the range 1 to 255 to a file called test.txt
     rnd64 -f 1k test.txt                  output 1kB of zeros to test.txt
     rnd64 -r 1k test.txt                  output a restricted range of 7-bit ASCII characters (33 to 126) to test.txt
-    rnd -c 1k | ent                       pipe 1kB of crypto bytes to the program *ent* for entropy checking
-    rnd -a 1k | nc 192.168.1.20 80        pipe 1kB of random bytes to *netcat* to send to 192.168.1.20 on port 80 (test server response)
+    rnd -c 1k | ent                       pipe 1kB of crypto bytes to the program ent for entropy checking
+    rnd -a 1k | nc 192.168.1.20 80        pipe 1kB of random bytes to netcat to send to 192.168.1.20 on port 80 (test server response)
 
 
-###### WARNING: Be careful of the amount of data generated in regards to the available memory of your PC for creating data, and the age and performance of your hard-drive for writing data.  A file dump of more than 1GB can be brutal!
+###### WARNING: Be careful of the amount of data generated in regards to the available memory of your PC for creating data, and the age and performance of your hard-drive for writing data.  A file dump of more than 1GB can be brutal.
 
 
 ## Build
@@ -57,6 +57,10 @@ Windows x64
 Compile with GCC x64:
 
 ### Linux
+
+    make
+
+or
 
     gcc rnd64.c -o rnd64 -lpthread -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -std=gnu99 -s
 
