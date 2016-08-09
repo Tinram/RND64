@@ -7,7 +7,7 @@
 	*
 	* @author        Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
-	* @version       0.31 mt
+	* @version       0.32 mt
 	* @license       GNU GPL version 3.0 (GPL v3); https://www.gnu.org/licenses/gpl-3.0.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
@@ -109,6 +109,13 @@ int main(int iArgCount, char* aArgV[]) {
 
 	/* convert filesize to unsigned 64-bit */
 	iTotalBytes = strtoull(sFileSize, (char**) NULL, 10);
+
+	/* check zero output */
+	if (iTotalBytes == 0) {
+
+		fprintf(stderr, "\n%s: zero-sized output! Please use a number and size suffix of k, m, or g for <size>  e.g. 100k\n\n", pFilename);
+		return EXIT_FAILURE;
+	}
 
 	/* convert unit to bytes */
 	if (cUnit == 'k') {

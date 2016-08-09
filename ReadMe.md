@@ -4,7 +4,7 @@
 ### 64-bit multi-threading random data generator
 
 
-##### RND64 v.0.31
+##### RND64 v.0.32
 
 ##### Linux and Windows
 
@@ -54,7 +54,7 @@ Windows x64
 
 ## Build
 
-Compile with GCC x64:
+In the directory containing either the clone or the extracted zip files, compile with GCC x64:
 
 ### Linux
 
