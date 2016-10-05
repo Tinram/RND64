@@ -11,7 +11,7 @@
 
 ## Purpose
 
-Generate large files (non-sparse) and large streams of random data (4GB+).
+Generate large files (non-sparse) and large streams of random data (4GB+) at fast generation rates (~1.25GB/sec on modest CPUs such as Intel i3 desktop / Intel Xeon AWS microinstance (running Linux)).
 
 
 ## OS Support
