@@ -8,4 +8,4 @@ rnd64: rnd64.o
 	$(CC) $(CFLAGS) rnd64.o -lpthread -o rnd64
 
 clean:
-	rm -rf rnd64.o
+	rm -f rnd64.o
