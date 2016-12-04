@@ -4,14 +4,14 @@
 ### 64-bit multi-threading random data generator
 
 
-##### RND64 v.0.32
+##### RND64 v.0.33
 
 ##### Linux and Windows
 
 
 ## Purpose
 
-Generate large files (non-sparse) and large streams of random data (4GB+) at fast generation rates (~1.25GB/sec on modest CPUs such as Intel i3 desktop / Intel Xeon AWS microinstance (running Linux)).
+Generate large files (non-sparse) and large streams of random data (4GB+) at fast generation rates (~1.25GB/sec (under Linux using -f option) on modest CPUs such as Intel i3 desktop / Intel Xeon AWS microinstance).
 
 
 ## OS Support
@@ -50,7 +50,7 @@ Windows x64
     rnd64 -a 1k | nc 192.168.1.20 80      pipe 1kB of random bytes to 'netcat' to send to 192.168.1.20 on port 80
 
 
-###### WARNING: Be careful of the amount of data generated in regards to the available memory of the PC for creating data, and the age and performance of the PC's hard-drive for writing data.  A file dump of more than 1GB can be brutal.
+###### WARNING: Be careful of the amount of data generated in regards to the available memory of the PC for creating data, and the age and performance of the PC's hard-drive for writing data.  A file dump of more than 1GB can be brutal.  On Linux, a large <size> gigabyte value that works on a freshly booted system, may not work on the same busy long-running system, because of caching and application requirements.
 
 
 ## Build
@@ -90,6 +90,14 @@ Move the rnd64 executable to a location such as */usr/local/bin*  (location must
 #### Windows
 
 (Windows/Super key + Break) > Advanced tab > Environmental Variables button > click Path line > Edit button > Variable value - append at the end of existing line information: *C:\directory paths\to rnd64.exe\;*
+
+
+## Credits
+
++ Aleksandr Sergeev: testing, recommendations.
++ Travis Gockel: Linux free memory report.
++ MSDN: Windows crypto and free system memory.
++ Ben Alpert: microsecond timer.
 
 
 ## License

@@ -7,7 +7,7 @@
 	*
 	* @author        Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
-	* @version       0.32 mt
+	* @version       0.33 mt
 	* @license       GNU GPL version 3.0 (GPL v3); https://www.gnu.org/licenses/gpl-3.0.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
@@ -76,6 +76,8 @@ int main(int iArgCount, char* aArgV[]) {
 	unsigned int i;
 	unsigned int j;
 	unsigned int iFIndex = 0;
+	unsigned int iUnavailMB;
+	unsigned long long iFreeMemory;
 	char cUnit;
 	char sFileSize[iSizeLen];
 	char* aBuffer[iNumThreads];
@@ -133,6 +135,16 @@ int main(int iArgCount, char* aArgV[]) {
 		return EXIT_FAILURE;
 	}
 
+	iFreeMemory = getFreeSystemMemory();
+
+	/* bail out if required memory exceeds, or is likely to dangerously exhaust, free memory */
+	if (iTotalBytes > iFreeMemory) {
+
+		iUnavailMB = iTotalBytes / 1024 / 1024;
+		fprintf(stderr,"\n%s: insufficient memory to allocate %u MB.\nPlease use a smaller <size>\n\n", pFilename, iUnavailMB);
+		return EXIT_FAILURE;
+	}
+
 	/* set global variable for thread functions */
 	iBytes = iTotalBytes / iNumThreads;
 
@@ -163,7 +175,8 @@ int main(int iArgCount, char* aArgV[]) {
 
 		if (aBuffer[i] == NULL) {
 
-			fprintf(stderr, "\n%s: insufficient memory to allocate %"PRId64" bytes.\n\n", pFilename, iBytesLocal);
+			iUnavailMB = iBytesLocal / 1024 / 1024;
+			fprintf(stderr, "\n%s: insufficient memory to allocate %u MB in thread buffer.\n\n", pFilename, iUnavailMB);
 
 			for (j = 0; j <= i; j++) { /* deallocate up to this i */
 				free(aBuffer[j]);
@@ -189,7 +202,7 @@ int main(int iArgCount, char* aArgV[]) {
 		#endif
 	}
 
-	/* create stream if no specified <file> argument, then exit */
+	/* create stream if no specified [file] argument, then exit */
 	if (aArgV[3] == NULL) {
 
 		for (i = 0; i < iNumThreads; i++) {
@@ -449,6 +462,50 @@ int main(int iArgCount, char* aArgV[]) {
 
 		return NULL;
 	}
+
+#endif
+
+
+/**
+	* Attempt to find free memory available for allocation.
+	* Windows reporting through MEMORYSTATUSEX seems accurate.
+	* Linux is trickier: what is reported as free in conjunction with considerable buffering and caching.
+	*
+	* @return  integer
+*/
+
+#ifdef __linux
+
+unsigned long long getFreeSystemMemory() {
+
+	/**
+		* Derived from an example by Travis Gockel.
+		* Linux apparently provides only total and free (unbuffered) memory values reliably.
+		* Found that 0.5GB margin on kernel 4.4 with 6GB RAM is not quite enough (e.g 5g okay, 5300m locks system).
+	*/
+
+	long iPages;
+	long iPageSize;
+
+	iPages = sysconf(_SC_PHYS_PAGES);
+	iPageSize = sysconf(_SC_PAGE_SIZE);
+
+	return (iPages * iPageSize) - cSafetyChunk; /* assumes system has at least 1GB total memory */
+}
+
+#elif _WIN64
+
+unsigned long long getFreeSystemMemory() {
+
+	/* from MSDN */
+
+	MEMORYSTATUSEX stMemState;
+
+	stMemState.dwLength = sizeof(stMemState);
+	GlobalMemoryStatusEx(&stMemState);
+
+	return stMemState.ullAvailPhys;
+}
 
 #endif
 

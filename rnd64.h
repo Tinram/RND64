@@ -7,7 +7,7 @@
 	*
 	* @author        Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
-	* @version       0.32 mt
+	* @version       0.33 mt
 	* @license       GNU GPL version 3.0 (GPL v3); http://www.gnu.org/licenses/gpl.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
@@ -25,6 +25,7 @@
 #ifdef __linux
 	#include <pthread.h>
 	#include <sys/sysinfo.h>
+	#include <unistd.h>
 	#define RANDOM_PATH "/dev/urandom"
 #elif _WIN64
 	#include <windows.h>
@@ -32,7 +33,7 @@
 #endif
 
 
-#define RND64_VERSION "0.32 mt"
+#define RND64_VERSION "0.33 mt"
 
 
 #ifdef __linux
@@ -40,6 +41,7 @@
 	void* generateRestricted(void* buff);
 	void* generateSingleChar(void* buff);
 	void* generateCrypto(void* buff);
+	const unsigned long cSafetyChunk = 786432000; /* 0.75 MB non-allocation margin */
 #elif _WIN64
 	DWORD WINAPI generateAll(LPVOID buff);
 	DWORD WINAPI generateRestricted(LPVOID buff);
@@ -48,6 +50,7 @@
 #endif
 
 
+unsigned long long getFreeSystemMemory();
 void menu(char* pFilename);
 
 
