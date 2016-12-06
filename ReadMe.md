@@ -50,7 +50,7 @@ Windows x64
     rnd64 -a 1k | nc 192.168.1.20 80      pipe 1kB of random bytes to 'netcat' to send to 192.168.1.20 on port 80
 
 
-###### WARNING: Be careful of the amount of data generated in regards to the available memory of the PC for creating data, and the age and performance of the PC's hard-drive for writing data.  A file dump of more than 1GB can be brutal.  On Linux, a large <size> gigabyte value that works on a freshly booted system, may not work on the same busy long-running system, because of caching and application requirements.
+###### WARNING: RND64 depends upon the free memory of the system for data dumping (writing to a file in a single action, not in chunks). For large file dumps (over 1GB) consider first the free memory, and if using a mechanical hard drive, the drive's age and performance. On Linux systems, a large GB value that works on a freshly booted system, may not work on the same busy long-running system, because of caching and application requirements.
 
 
 ## Build
