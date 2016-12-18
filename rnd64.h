@@ -41,7 +41,7 @@
 	void* generateRestricted(void* buff);
 	void* generateSingleChar(void* buff);
 	void* generateCrypto(void* buff);
-	const unsigned long cSafetyChunk = 786432000; /* 0.75 MB non-allocation margin */
+	const unsigned long cSafetyChunk = 786432000; /* 0.75GB non-allocation margin */
 #elif _WIN64
 	DWORD WINAPI generateAll(LPVOID buff);
 	DWORD WINAPI generateRestricted(LPVOID buff);
