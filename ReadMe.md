@@ -61,7 +61,11 @@ In the directory containing either the clone or the extracted zip files, compile
 
     make
 
-or
+or full process:
+
+    make && make install && make clean
+
+compile manually:
 
     gcc rnd64.c -o rnd64 -lpthread -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -std=gnu99 -s
 
@@ -85,7 +89,9 @@ On both Linux and Windows, it's more convenient for rnd64 to be available from a
 
 #### Linux
 
-Move the rnd64 executable to a location such as */usr/local/bin*  (location must be present in $PATH).
+    make install
+
+Or move the rnd64 executable to a location such as */usr/local/bin*  (location must be present in $PATH).
 
 #### Windows
 
