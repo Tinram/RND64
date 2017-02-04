@@ -16,9 +16,9 @@ Generate large files (non-sparse) and large streams of random data (4GB+) at fas
 
 ## OS Support
 
-Linux x64
++ Linux x64
 
-Windows x64
++ Windows x64
 
 
 ## Usage
@@ -95,7 +95,7 @@ Or move the rnd64 executable to a location such as */usr/local/bin*  (location m
 
 #### Windows
 
-(Windows/Super key + Break) > Advanced tab > Environmental Variables button > click Path line > Edit button > Variable value - append at the end of existing line information: *C:\directory paths\to rnd64.exe\;*
+[Windows/Super key + Break] > Advanced tab > Environmental Variables button > click Path line > Edit button > Variable value - append at the end of existing line information: *C:\directory\path\to\rnd64.exe\;*
 
 
 ## Credits
