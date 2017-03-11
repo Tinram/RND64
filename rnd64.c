@@ -7,7 +7,7 @@
 	*
 	* @author        Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
-	* @version       0.33 mt
+	* @version       0.34 mt
 	* @license       GNU GPL version 3.0 (GPL v3); https://www.gnu.org/licenses/gpl-3.0.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
@@ -441,7 +441,7 @@ int main(int iArgCount, char* aArgV[]) {
 		unsigned int iErrFlag = 0;
 		char cS;
 		char* pBuffer = (char*) buff;
-		HCRYPTPROV rCryptHandle;
+		HCRYPTPROV rCryptHandle = 0;
 
 		if (CryptAcquireContext(&rCryptHandle, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT) == FALSE) {
 
@@ -457,7 +457,12 @@ int main(int iArgCount, char* aArgV[]) {
 		}
 
 		if ( ! iErrFlag) {
+
 			pBuffer[iBytesLocal] = '\0';
+
+			if (CryptReleaseContext(rCryptHandle, 0)) {
+				rCryptHandle = 0;
+			}
 		}
 
 		return NULL;
