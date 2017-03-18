@@ -98,6 +98,17 @@ Or move the rnd64 executable to a location such as */usr/local/bin*  (location m
 [Windows/Super key + Break] > Advanced tab > Environmental Variables button > click Path line > Edit button > Variable value - append at the end of existing line information: *C:\directory\path\to\rnd64.exe\;*
 
 
+## Speed
+
+RND64 is fast, but not that fast. There are faster ways to create files than using C's `fwrite()`, which RND64 uses.
+
+On Linux, `write()` can be up to 4 times faster than `fwrite()` on some machines (using a single-threaded version of RND64, with file descriptor unclosed).  However, `write()` will only transfer a maximum of 2.1GB, even on 64-bit systems [[write(2)](http://man7.org/linux/man-pages/man2/write.2.html)]. `fwrite()` does not have this limitation.
+
+Multi-threading has its own speed impacts, with thread-waiting and multiple memory buffers being combined. The single-threaded version of RND64 is slower for data generation but faster for file output.
+
+Chunking output on memory boundaries is another technique used by programmers. So far in my experiments, this has not produced favourable results with multi-threading.
+
+
 ## Credits
 
 + Aleksandr Sergeev: testing, recommendations.
