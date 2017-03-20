@@ -7,7 +7,7 @@
 	*
 	* @author        Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
-	* @version       0.34 mt
+	* @version       0.35 mt
 	* @license       GNU GPL version 3.0 (GPL v3); https://www.gnu.org/licenses/gpl-3.0.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
@@ -307,7 +307,7 @@ int main(int iArgCount, char* aArgV[]) {
 		}
 
 		pBuffer[iBytesLocal] = '\0';
-		return NULL;
+		return 0;
 	}
 
 #endif
@@ -356,7 +356,7 @@ int main(int iArgCount, char* aArgV[]) {
 		}
 
 		pBuffer[iBytesLocal] = '\0';
-		return NULL;
+		return 0;
 	}
 
 #endif
@@ -390,7 +390,7 @@ int main(int iArgCount, char* aArgV[]) {
 
 		memset(pBuffer, 48, iBytesLocal);
 		pBuffer[iBytesLocal] = '\0';
-		return NULL;
+		return 0;
 	}
 
 #endif
@@ -465,7 +465,7 @@ int main(int iArgCount, char* aArgV[]) {
 			}
 		}
 
-		return NULL;
+		return 0;
 	}
 
 #endif
