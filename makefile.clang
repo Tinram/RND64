@@ -1,0 +1,18 @@
+
+# Clang makefile for RND64
+
+CC = clang
+CFLAGS = -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -s
+	# -s is effective despite warnings (-strip-all not recognised in Clang 3.8.0)
+NAME = rnd64
+
+
+$(NAME): $(NAME).o
+	$(CC) $(CFLAGS) $(NAME).o -lpthread -o $(NAME)
+
+install:
+	sudo cp $(NAME) /usr/local/bin/$(NAME)
+	@echo "Attempted to copy $(NAME) to /usr/local/bin"
+
+clean:
+	rm -f $(NAME).o
