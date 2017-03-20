@@ -1,5 +1,5 @@
 
-# makefile for rnd64
+# makefile for RND64
 
 CC = gcc
 CFLAGS = -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -std=gnu99 -s
