@@ -67,7 +67,13 @@ or full process:
 
 compile manually:
 
+**GCC:**
+
     gcc rnd64.c -o rnd64 -lpthread -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -std=gnu99 -s
+
+**Clang:**
+
+    clang rnd64.c -o rnd64 -lpthread -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -s
 
 ### Windows
 
@@ -75,10 +81,11 @@ compile manually:
 
 #### Further Optimisation
 
-    -march=core-avx-i -mtune=core-avx-i        Intel Ivy Bridge
-    -march=core-avx2 -mtune=core-avx2          Intel Haswell
+    -march=core-avx-i -mtune=core-avx-i            Intel Ivy Bridge
+    -march=core-avx2 -mtune=core-avx2              Intel Haswell
+    -march=skylake-avx512 -mtune=skylake-avx512    Intel Skylake
 
-    gcc -Q -march=native --help=target         detect current CPU options to use in the above gcc switches
+    gcc -Q -march=native --help=target             detect current CPU options to use in the above gcc switches
 
 
 ## Other
