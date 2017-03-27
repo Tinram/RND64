@@ -481,36 +481,36 @@ int main(int iArgCount, char* aArgV[]) {
 
 #ifdef __linux
 
-unsigned long long getFreeSystemMemory() {
+	unsigned long long getFreeSystemMemory() {
 
-	/**
-		* Derived from an example by Travis Gockel.
-		* Linux apparently provides only total and free (unbuffered) memory values reliably.
-		* Found that 0.5GB margin on kernel 4.4 with 6GB RAM is not quite enough (e.g 5g okay, 5300m locks system).
-	*/
+		/**
+			* Derived from an example by Travis Gockel.
+			* Linux apparently provides only total and free (unbuffered) memory values reliably.
+			* Found that 0.5GB margin on kernel 4.4 with 6GB RAM is not quite enough (e.g 5g okay, 5300m locks system), 0.75GB required.
+		*/
 
-	long iPages;
-	long iPageSize;
+		long iPages;
+		long iPageSize;
 
-	iPages = sysconf(_SC_PHYS_PAGES);
-	iPageSize = sysconf(_SC_PAGE_SIZE);
+		iPages = sysconf(_SC_PHYS_PAGES);
+		iPageSize = sysconf(_SC_PAGE_SIZE);
 
-	return (iPages * iPageSize) - cSafetyChunk; /* assumes system has at least 1GB total memory */
-}
+		return (iPages * iPageSize) - cSafetyChunk; /* assumes system has at least 1GB total memory */
+	}
 
 #elif _WIN64
 
-unsigned long long getFreeSystemMemory() {
+	unsigned long long getFreeSystemMemory() {
 
-	/* from MSDN */
+		/* from MSDN */
 
-	MEMORYSTATUSEX stMemState;
+		MEMORYSTATUSEX stMemState;
 
-	stMemState.dwLength = sizeof(stMemState);
-	GlobalMemoryStatusEx(&stMemState);
+		stMemState.dwLength = sizeof(stMemState);
+		GlobalMemoryStatusEx(&stMemState);
 
-	return stMemState.ullAvailPhys;
-}
+		return stMemState.ullAvailPhys;
+	}
 
 #endif
 
