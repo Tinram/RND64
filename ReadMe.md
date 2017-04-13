@@ -11,7 +11,7 @@
 
 ## Purpose
 
-Generate large files (non-sparse) and large streams of random data (4GB+) at fast generation rates (~1.25GB/sec (under Linux using -f option) on modest CPUs such as Intel i3 desktop / Intel Xeon AWS microinstance).
+Generate large files (non-sparse) and large streams of random data (4GB+) at fast generation rates (~1.5GB/sec stream output on Intel Xeon AWS Linux microinstance, -f option).
 
 
 ## OS Support
@@ -30,7 +30,7 @@ Generate large files (non-sparse) and large streams of random data (4GB+) at fas
 
     -a     (all)             characters 1 to 255        includes control codes
     -f     (fastest)         character zero (48)        fastest generator
-    -r     (restrict)        characters 33 to 126       safe for terminal output
+    -r     (restrict)        characters 33 to 126       7-bit printable ASCII, safe for terminal output
     -c     (crypto)          crypto-sourced bytes       Linux: /dev/urandom, Windows: CryptGenRandom
                                                             (much slower byte generation)
 
@@ -85,20 +85,20 @@ compile manually:
     -march=core-avx2 -mtune=core-avx2              Intel Haswell
     -march=skylake-avx512 -mtune=skylake-avx512    Intel Skylake
 
-    gcc -Q -march=native --help=target             detect current CPU options to use in the above gcc switches
+    gcc -Q -march=native --help=target             detect current CPU options to use in the above GCC switches
 
 
 ## Other
 
 The switches `-a` and `-c` are dangerous options when both a filename and pipe symbol are omitted. The wide range of output bytes, including control characters, are printed in the terminal, which can cause the terminal to lock or crash (especially on Windows).
 
-On both Linux and Windows, it's more convenient for rnd64 to be available from any directory location via the PATH system variable (rather than copying the executable file to the directory where needed).
+On both Linux and Windows, it's more convenient for RND64 to be available from any directory location via the PATH system variable (rather than copying the executable file to the directory where needed).
 
 #### Linux
 
     make install
 
-Or move the rnd64 executable to a location such as */usr/local/bin*  (location must be present in $PATH).
+Or move the RND64 executable to a location such as */usr/local/bin*  (location must be present in $PATH).
 
 #### Windows
 
@@ -107,7 +107,7 @@ Or move the rnd64 executable to a location such as */usr/local/bin*  (location m
 
 ## Speed
 
-RND64 is fast, but not that fast. There are faster ways to create files than using C's `fwrite()`, which RND64 uses.
+RND64 is fast, but not that fast. Stream output rates are decent. For file output, however, there are faster ways to create files than using C's `fwrite()`, which RND64 uses.
 
 On Linux, `write()` can be up to 4 times faster than `fwrite()` on some machines (using a single-threaded version of RND64, with file descriptor unclosed).  However, `write()` will only transfer a maximum of 2.1GB, even on 64-bit systems [[write(2)](http://man7.org/linux/man-pages/man2/write.2.html)]. `fwrite()` does not have this limitation.
 
