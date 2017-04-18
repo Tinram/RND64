@@ -2,7 +2,7 @@
 /**
 	* rnd64_st.c
 	*
-	* Version:       0.28 st
+	* Version:       0.29 st
 	* Version note:  Experimental, Linux-only, single-threaded version using write() to bypass OS buffers. 2.1GB max data dump.
 	* License:       GNU GPL version 3.0 (GPL v3); http://www.gnu.org/licenses/gpl.html
 	* Purpose:       Large file dump.
@@ -27,7 +27,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#define RND64_VERSION "0.28 st"
+#define RND64_VERSION "0.29 st"
 #define RANDOM_PATH "/dev/urandom"
 
 
@@ -148,7 +148,7 @@ int main(int iArgCount, char* aArgV[]) {
 
 		if (fread(pBuffer, 1, iBytes, pUrand) != iBytes) {
 
-			fprintf(stderr, "\n%s: insufficient crypto random bytes available.\n\n", aArgV[0]);
+			fprintf(stderr, "\n%s: insufficient crypto random bytes available.\n\n", pFilename);
 			fclose(pUrand);
 			free(pBuffer); /* deallocate */
 			return EXIT_FAILURE;
