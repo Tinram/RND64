@@ -1,7 +1,7 @@
 
 # RND64
 
-### 64-bit multi-threading random data generator
+### 64-bit multi-threading random data generator.
 
 
 ##### RND64 v.0.35
@@ -11,7 +11,7 @@
 
 ## Purpose
 
-Generate large files (non-sparse) and large streams of random data (4GB+) at fast generation rates (~1.5GB/sec stream output on Intel Xeon AWS Linux microinstance, -f option).
+Generate large files (non-sparse) and large streams of random data (4GB+) at fast generation rates (~1.5GB/sec stream output on Intel Xeon AWS Linux microinstance, `-f` option).
 
 
 ## OS Support
@@ -85,7 +85,7 @@ compile manually:
     -march=core-avx2 -mtune=core-avx2              Intel Haswell
     -march=skylake-avx512 -mtune=skylake-avx512    Intel Skylake
 
-    gcc -Q -march=native --help=target             detect current CPU options to use in the above GCC switches
+    gcc -Q -march=native --help=target             show -march/-mtune native CPU parameters
 
 
 ## Other
@@ -107,7 +107,9 @@ Or move the RND64 executable to a location such as */usr/local/bin*  (location m
 
 ## Speed
 
-RND64 is fast, but not that fast. Stream output rates are decent. For file output, however, there are faster ways to create files than using C's `fwrite()`, which RND64 uses.
+RND64 is fast, but not that fast. Stream output rates are decent. Zero output approximately keeps up with `dd`.
+
+For file output, however, there are faster ways to create files than using C's `fwrite()`, which RND64 uses.
 
 On Linux, `write()` can be up to 4 times faster than `fwrite()` on some machines (using a single-threaded version of RND64, with file descriptor unclosed).  However, `write()` will only transfer a maximum of 2.1GB, even on 64-bit systems [[write(2)](http://man7.org/linux/man-pages/man2/write.2.html)]. `fwrite()` does not have this limitation.
 
