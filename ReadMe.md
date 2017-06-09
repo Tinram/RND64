@@ -9,6 +9,10 @@
 ##### Linux and Windows
 
 
+[1]: https://tinram.github.io/images/rnd64.png
+![rnd64][1]
+
+
 ## Purpose
 
 Generate large files (non-sparse) and large streams of random data (4GB+) at fast generation rates (~1.5GB/sec stream output on Intel Xeon AWS Linux microinstance, `-f` option).
