@@ -15,7 +15,7 @@
 
 ## Purpose
 
-Generate large files (non-sparse) and large streams of random data (4GB+) at fast generation rates (~1.5GB/sec stream output on Intel Xeon AWS Linux microinstance, `-f` option).
+Generate large files (non-sparse) and large streams of random data (4GB+) at fast generation rates (~3GB/sec stream output on Core i3 desktop CPU, `-f` option).
 
 
 ## OS Support
@@ -111,7 +111,7 @@ Or move the RND64 executable to a location such as */usr/local/bin*  (location m
 
 ## Speed
 
-RND64 is fast, but not that fast. Stream output rates are decent. Zero output approximately keeps up with `dd`.
+RND64 is fast, but not that fast. Zero output stream rates are decent with plentiful RAM (~3GB/sec, Core i3 Haswell desktop CPU, 12GB RAM [1GB/sec on same PC with 4GB RAM]). Zero streams keep up approximately with `dd`.
 
 For file output, however, there are faster ways to create files than using C's `fwrite()`, which RND64 uses.
 
