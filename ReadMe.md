@@ -121,6 +121,10 @@ Multi-threading has its own speed impacts, with thread-waiting and multiple memo
 
 Chunking output on memory boundaries is another technique used by programmers. So far in my experiments, this has not produced favourable results with multi-threading.
 
+### Meltdown / Spectre Patches
+
+Meltdown / 'Spectre Variant 1' Linux kernel patches impart a slowdown of approximately 10% on RND64 data generation in memory (4.4 kernel).
+
 
 ## Credits
 
