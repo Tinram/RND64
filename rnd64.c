@@ -7,7 +7,7 @@
 	*
 	* @author        Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
-	* @version       0.35 mt
+	* @version       0.36 mt
 	* @license       GNU GPL version 3.0 (GPL v3); https://www.gnu.org/licenses/gpl-3.0.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
@@ -16,8 +16,9 @@
 	*                    Windows:    gcc rnd64.c -o rnd64.exe -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -std=c99 -s
 	*
 	*                    further CPU optimisation examples:
-	*                                -march=core-avx-i -mtune=core-avx-i        Intel Ivy Bridge
-	*                                -march=core-avx2 -mtune=core-avx2          Intel Haswell
+	*                                -march=core-avx-i -mtune=core-avx-i            Intel Ivy Bridge
+	*                                -march=core-avx2 -mtune=core-avx2              Intel Haswell
+	*                                -march=skylake-avx512 -mtune=skylake-avx512    Intel Skylake
 */
 
 
@@ -73,11 +74,12 @@ int main(int iArgCount, char* aArgV[]) {
 
 	int iSizeLen = strlen(aArgV[2]);
 	int iMSec;
+	long long int iNegCheck = 0;
 	unsigned int i;
 	unsigned int j;
 	unsigned int iFIndex = 0;
 	unsigned int iUnavailMB;
-	unsigned long long iFreeMemory;
+	unsigned long long int iFreeMemory;
 	char cUnit;
 	char sFileSize[iSizeLen];
 	char* aBuffer[iNumThreads];
@@ -105,14 +107,23 @@ int main(int iArgCount, char* aArgV[]) {
 		return EXIT_FAILURE;
 	}
 
-	/* substring filesize */
+	/* substring size */
 	strncpy(sFileSize, aArgV[2], iSizeLen - 1);
 	sFileSize[iSizeLen - 1] = '\0';
 
-	/* convert filesize to unsigned 64-bit */
+	/* check for negative size */
+	iNegCheck = strtol(sFileSize, (char**) NULL, 10);
+
+	if (iNegCheck < 0) {
+
+		fprintf(stderr, "\n%s: negative size attempted! Please use a positive number and size suffix of k, m, or g for <size>  e.g. 100k\n\n", pFilename);
+		return EXIT_FAILURE;
+	}
+
+	/* convert size to unsigned 64-bit */
 	iTotalBytes = strtoull(sFileSize, (char**) NULL, 10);
 
-	/* check zero output */
+	/* check for zero output */
 	if (iTotalBytes == 0) {
 
 		fprintf(stderr, "\n%s: zero-sized output! Please use a number and size suffix of k, m, or g for <size>  e.g. 100k\n\n", pFilename);
@@ -251,7 +262,7 @@ int main(int iArgCount, char* aArgV[]) {
 	iMSec = tDiff * 1000 / CLOCKS_PER_SEC;
 	printf("time: %d s %d ms\n", iMSec / 1000, iMSec % 1000);
 
-	/* MB/s calculation for filesize over 50MB */
+	/* MB/s calculation for size over 50MB */
 	if (iTotalBytes > 52428800) {
 		printf("MB/s: %0.2f\n", (float) ((iTotalBytes * cMBRecip * cMBRecip) / (iMSec * 0.001)));
 	}
@@ -524,7 +535,7 @@ int main(int iArgCount, char* aArgV[]) {
 
 void menu(char* pFilename) {
 
-	printf("\nRND64 v.%s\ncopysense.co.uk", RND64_VERSION);
+	printf("\nRND64 v.%s\nby Tinram", RND64_VERSION);
 	printf("\n\nUsage:\n");
 	printf("\t\t%s [option] <size> [file]", pFilename);
 	printf("\n\t\t%s [option] <size> | <prog>", pFilename);
