@@ -7,7 +7,7 @@
 	*
 	* @author        Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
-	* @version       0.36 mt
+	* @version       0.37 mt
 	* @license       GNU GPL version 3.0 (GPL v3); https://www.gnu.org/licenses/gpl-3.0.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
@@ -26,15 +26,14 @@
 
 
 /* global variables for thread functions */
-char* pFilename;
-uint64_t iBytes;
+char* pFilename = NULL;
+uint64_t iBytes = 0;
 
 
 int main(int iArgCount, char* aArgV[]) {
 
 	/* arguments check */
 	if (iArgCount < 3) {
-
 		menu(aArgV[0]);
 		return EXIT_FAILURE;
 	}
@@ -50,7 +49,6 @@ int main(int iArgCount, char* aArgV[]) {
 	pFilename = aArgV[0];
 
 	if (iAll != 0 && iSingleChar != 0 && iRestricted != 0 && iCrypto != 0) {
-
 		menu(pFilename);
 		return EXIT_FAILURE;
 	}
@@ -73,20 +71,24 @@ int main(int iArgCount, char* aArgV[]) {
 	#endif
 
 	int iSizeLen = strlen(aArgV[2]);
-	int iMSec;
-	long long int iNegCheck = 0;
-	unsigned int i;
-	unsigned int j;
+	int iMSec = 0;
+	int64_t iNegCheck = 0;
+
+	unsigned int i = 0;
+	unsigned int j = 0;
 	unsigned int iFIndex = 0;
-	unsigned int iUnavailMB;
-	unsigned long long int iFreeMemory;
+	unsigned int iUnavailMB = 0;
+	uint64_t iFreeMemory = 0;
+	uint64_t iTotalBytes = 0;
+	uint64_t iBytesLocal = 0;
+
 	char cUnit;
 	char sFileSize[iSizeLen];
 	char* aBuffer[iNumThreads];
-	uint64_t iTotalBytes;
-	uint64_t iBytesLocal;
+
 	FILE* pFile;
-	clock_t tStart, tDiff;
+	clock_t tStart = 0;
+	clock_t tDiff = 0;
 
 	/* function pointers */
 	void (*pFuncs[4]) = {
@@ -102,7 +104,6 @@ int main(int iArgCount, char* aArgV[]) {
 
 	/* check size character */
 	if (cUnit != 'k' && cUnit != 'm' && cUnit != 'g') {
-
 		fprintf(stderr, "\n%s: please specify the file/stream size with a suffix of k, m, or g\n\n", pFilename);
 		return EXIT_FAILURE;
 	}
@@ -115,7 +116,6 @@ int main(int iArgCount, char* aArgV[]) {
 	iNegCheck = strtol(sFileSize, (char**) NULL, 10);
 
 	if (iNegCheck < 0) {
-
 		fprintf(stderr, "\n%s: negative size attempted! Please use a positive number and size suffix of k, m, or g for <size>  e.g. 100k\n\n", pFilename);
 		return EXIT_FAILURE;
 	}
@@ -125,7 +125,6 @@ int main(int iArgCount, char* aArgV[]) {
 
 	/* check for zero output */
 	if (iTotalBytes == 0) {
-
 		fprintf(stderr, "\n%s: zero-sized output! Please use a number and size suffix of k, m, or g for <size>  e.g. 100k\n\n", pFilename);
 		return EXIT_FAILURE;
 	}
@@ -141,7 +140,6 @@ int main(int iArgCount, char* aArgV[]) {
 		iTotalBytes = 1024 * 1024 * 1024 * iTotalBytes;
 	}
 	else {
-
 		fprintf(stderr, "\n%s: file size error!\n\n", pFilename);
 		return EXIT_FAILURE;
 	}
@@ -150,7 +148,6 @@ int main(int iArgCount, char* aArgV[]) {
 
 	/* bail out if required memory exceeds, or is likely to dangerously exhaust, free memory */
 	if (iTotalBytes > iFreeMemory) {
-
 		iUnavailMB = iTotalBytes / 1024 / 1024;
 		fprintf(stderr,"\n%s: insufficient memory to allocate %u MB.\nPlease use a smaller <size>\n\n", pFilename, iUnavailMB);
 		return EXIT_FAILURE;
@@ -492,7 +489,7 @@ int main(int iArgCount, char* aArgV[]) {
 
 #ifdef __linux
 
-	unsigned long long getFreeSystemMemory() {
+	uint64_t getFreeSystemMemory(void) {
 
 		/**
 			* Derived from an example by Travis Gockel.
@@ -500,18 +497,15 @@ int main(int iArgCount, char* aArgV[]) {
 			* Found that 0.5GB margin on kernel 4.4 with 6GB RAM is not quite enough (e.g 5g okay, 5300m locks system), 0.75GB required.
 		*/
 
-		long iPages;
-		long iPageSize;
-
-		iPages = sysconf(_SC_PHYS_PAGES);
-		iPageSize = sysconf(_SC_PAGE_SIZE);
+		long int iPages = sysconf(_SC_PHYS_PAGES);
+		long int iPageSize = sysconf(_SC_PAGE_SIZE);
 
 		return (iPages * iPageSize) - cSafetyChunk; /* assumes system has at least 1GB total memory */
 	}
 
 #elif _WIN64
 
-	unsigned long long getFreeSystemMemory() {
+	uint64_t getFreeSystemMemory(void) {
 
 		/* from MSDN */
 
@@ -529,16 +523,16 @@ int main(int iArgCount, char* aArgV[]) {
 /**
 	* Display menu.
 	*
-	* @param   char* pFilename, name from aArgV[0]
+	* @param   char* pFName, name from aArgV[0]
 	* @return  void
 */
 
-void menu(char* pFilename) {
+void menu(char* const pFName) {
 
 	printf("\nRND64 v.%s\nby Tinram", RND64_VERSION);
 	printf("\n\nUsage:\n");
-	printf("\t\t%s [option] <size> [file]", pFilename);
-	printf("\n\t\t%s [option] <size> | <prog>", pFilename);
+	printf("\t\t%s [option] <size> [file]", pFName);
+	printf("\n\t\t%s [option] <size> | <prog>", pFName);
 	printf("\n\nOptions:");
 	printf("\n\t\t-a\t chars 1-255    (all)");
 	printf("\n\t\t-f\t single char    (fastest)");

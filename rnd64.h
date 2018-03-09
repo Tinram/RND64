@@ -7,7 +7,7 @@
 	*
 	* @author        Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
-	* @version       0.36 mt
+	* @version       0.37 mt
 	* @license       GNU GPL version 3.0 (GPL v3); http://www.gnu.org/licenses/gpl.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
@@ -33,7 +33,7 @@
 #endif
 
 
-#define RND64_VERSION "0.36 mt"
+#define RND64_VERSION "0.37 mt"
 
 
 #ifdef __linux
@@ -41,7 +41,7 @@
 	void* generateRestricted(void* buff);
 	void* generateSingleChar(void* buff);
 	void* generateCrypto(void* buff);
-	const unsigned long cSafetyChunk = 786432000; /* 0.75GB non-allocation margin */
+	unsigned long int const cSafetyChunk = 786432000; /* 0.75GB non-allocation margin */
 #elif _WIN64
 	DWORD WINAPI generateAll(LPVOID buff);
 	DWORD WINAPI generateRestricted(LPVOID buff);
@@ -50,11 +50,11 @@
 #endif
 
 
-unsigned long long getFreeSystemMemory();
-void menu(char* pFilename);
+uint64_t getFreeSystemMemory(void);
+void menu(char* const pFName);
 
 
-const float cMBRecip = 0.000976562;
+float const cMBRecip = 0.000976562;
 
 
 extern char* pFilename;
