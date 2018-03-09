@@ -4,7 +4,7 @@
 ### 64-bit multi-threading random data generator.
 
 
-##### RND64 v.0.35
+##### RND64 v.0.37
 
 ##### Linux and Windows
 
