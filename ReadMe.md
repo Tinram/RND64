@@ -51,11 +51,11 @@ A few Windows programs exist to create large files, and there are plenty of shel
     rnd64.exe or rnd64   (Windows)        display command-line options, as above
     ./rnd64              (Linux)
 
-    rnd64 -a 1k test.txt                  output 1kB of random bytes in the range 1 to 255 to a file called test.txt
-    rnd64 -f 1k test.txt                  output 1kB of zeros to test.txt
-    rnd64 -r 1k test.txt                  output a restricted range of 7-bit ASCII characters (33 to 126) to test.txt
+    rnd64 -a 1k f.txt                     output 1kB of random bytes, in the range 1 to 255, to the file 'f.txt'
+    rnd64 -f 1k f.txt                     output 1kB of zeros to 'f.txt'
+    rnd64 -r 1k f.txt                     output a restricted range of 7-bit ASCII characters (33 to 126) to 'f.txt'
     rnd64 -f 500m | pv > /dev/null        send 500MB of zeros to /dev/null with 'pv' displaying the throughput rate
-    rnd64 -c 1k | ent                     pipe 1kB of crypto bytes to 'ent' for entropy checking
+    rnd64 -c 1k | ent                     pipe 1kB of crypto bytes to the program 'ent'
     rnd64 -a 1k | nc 192.168.1.20 80      pipe 1kB of random bytes to 'netcat' to send to 192.168.1.20 on port 80
 
 
@@ -116,9 +116,13 @@ Or move the RND64 executable to a location such as */usr/local/bin*  (location m
 
 ## Speed
 
-RND64 is fast, but not that fast. Zero stream generation rates are decent with plentiful RAM (~3GB/sec, Core i3 Haswell desktop CPU, 12GB RAM [1GB/sec on same PC with 4GB RAM]). Zero streams keep up approximately with `dd`.
+RND64 is fast, but not that fast:
 
-For file output, however, there are faster ways to create files than using C's `fwrite()`, which RND64 uses.
++ Zero stream generation rates are decent with plenty of RAM available (~3GB/sec, Core i3 Haswell desktop CPU, 12GB RAM [1GB/sec on same PC with 4GB RAM]). Zero streams keep up approximately with `dd`.
+
++ File generation rates will be subject to a multitude of factors including: OS, kernel patches, HDD versus SSD drive, SSD interface and underlying SSD technology etc.
+
+In the code, there are faster ways to create files than using C's `fwrite()`, which RND64 uses.
 
 On Linux, `write()` can be up to 4 times faster than `fwrite()` on some machines (using a single-threaded version of RND64, with file descriptor unclosed).  However, `write()` will only transfer a maximum of 2.1GB, even on 64-bit systems [[write(2)](http://man7.org/linux/man-pages/man2/write.2.html)]. `fwrite()` does not have this limitation, and 4GB+ output is what I sought.
 
