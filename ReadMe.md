@@ -14,7 +14,7 @@
 
 ## Purpose
 
-Generate large files (non-sparse) and large streams of random data (4GB+) at fast generation rates (~3GB/sec stream output on Core i3 desktop CPU, `-f` option).
+Generate large files (non-sparse) and large streams of random data (4GB+) at fast generation rates (~3GB/sec stream output, Linux, Core i3 CPU, `-f` option).
 
 *What's the point of such large lumps of junk?*
 
@@ -121,7 +121,7 @@ Or move the RND64 executable to a location such as */usr/local/bin*  (location m
 
 RND64 is fast, but not that fast:
 
-+ Zero stream generation rates are decent with plenty of RAM available (~3GB/sec, Core i3 Haswell desktop CPU, 12GB RAM [1GB/sec on same PC with 4GB RAM]). Zero streams keep up approximately with `dd` on Linux.
++ Zero stream generation rates are decent on Linux with plenty of RAM available (~3GB/sec, Core i3 Haswell 3.4GHz desktop CPU, 12GB RAM [1GB/sec on same PC with 4GB RAM]). Zero streams keep up approximately with `dd`. (Windows running on a Core i7 Haswell 3.6GHz desktop CPU, with 16GB RAM, manages 0.94GB/s.)
 
 + File generation rates will be subject to a multitude of factors including: OS, OS activity, kernel patches, HDD versus SSD drive, SSD interface and underlying SSD technology etc.
 
