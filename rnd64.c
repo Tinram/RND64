@@ -7,7 +7,7 @@
 	*
 	* @author        Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
-	* @version       0.37 mt
+	* @version       0.38 mt
 	* @license       GNU GPL version 3.0 (GPL v3); https://www.gnu.org/licenses/gpl-3.0.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
@@ -16,6 +16,7 @@
 	*                    Windows:    gcc rnd64.c -o rnd64.exe -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -std=c99 -s
 	*
 	*                    further CPU optimisation examples:
+	*                                -mtune=native -march=native                    current CPU
 	*                                -march=core-avx-i -mtune=core-avx-i            Intel Ivy Bridge
 	*                                -march=core-avx2 -mtune=core-avx2              Intel Haswell
 	*                                -march=skylake-avx512 -mtune=skylake-avx512    Intel Skylake
@@ -424,8 +425,7 @@ int main(int iArgCount, char* aArgV[]) {
 			free(pBuffer); /* deallocate */
 			fprintf(stderr, "\n%s: secure data generation unavailable.\n\n", pFilename);
 		}
-
-		if (fread(pBuffer, 1, iBytesLocal, pUrand) != iBytesLocal) {
+		else if (fread(pBuffer, 1, iBytesLocal, pUrand) != iBytesLocal) {
 
 			fclose(pUrand);
 			free(pBuffer); /* deallocate */
@@ -444,7 +444,6 @@ int main(int iArgCount, char* aArgV[]) {
 
 	DWORD WINAPI generateCrypto(LPVOID buff) {
 
-		uint64_t i = 0;
 		uint64_t iBytesLocal = iBytes;
 		unsigned int iErrFlag = 0;
 		char cS;
@@ -458,13 +457,13 @@ int main(int iArgCount, char* aArgV[]) {
 			fprintf(stderr, "\n%s: secure data generation unavailable (CryptAcquireContext failed).\n\n", pFilename);
 		}
 
-		for (i = 0; i < iBytesLocal; i++) {
-
-			CryptGenRandom(rCryptHandle, 1, (BYTE*) &cS);
-			pBuffer[i] = cS;
-		}
-
 		if ( ! iErrFlag) {
+
+			for (uint64_t i = 0; i < iBytesLocal; i++) {
+
+				CryptGenRandom(rCryptHandle, 1, (BYTE*) &cS);
+				pBuffer[i] = cS;
+			}
 
 			pBuffer[iBytesLocal] = '\0';
 
