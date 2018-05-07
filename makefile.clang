@@ -2,7 +2,7 @@
 # Clang makefile for RND64
 
 CC = clang
-CFLAGS = -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -Wformat=2 -Wno-unused-parameter -Wshadow -Wwrite-strings -Wstrict-prototypes -Wold-style-definition -Wredundant-decls -Wnested-externs -Wmissing-include-dirs -std=gnu99
+CFLAGS = -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -Wformat=2 -Wunused-parameter -Wshadow -Wwrite-strings -Wstrict-prototypes -Wold-style-definition -Wredundant-decls -Wnested-externs -Wmissing-include-dirs -Wformat-security -std=gnu99
 
 NAME = rnd64
 
