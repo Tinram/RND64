@@ -5,7 +5,7 @@
 
 #### Linux and Windows
 
-##### RND64 v.0.37
+##### RND64 v.0.38
 
 
 [1]: https://tinram.github.io/images/rnd64.png
@@ -93,11 +93,11 @@ compile manually:
 
 #### Further Optimisation
 
-    -march=core-avx-i -mtune=core-avx-i            Intel Ivy Bridge
+    -mtune=native -march=native                    current CPU
+    gcc -Q -march=native --help=target             show -march/-mtune native CPU parameters
+
     -march=core-avx2 -mtune=core-avx2              Intel Haswell
     -march=skylake-avx512 -mtune=skylake-avx512    Intel Skylake
-
-    gcc -Q -march=native --help=target             show -march/-mtune native CPU parameters
 
 
 ## Other
