@@ -60,12 +60,22 @@ A few Windows programs exist to create large files, and there are plenty of shel
     rnd64 -f 100g | pv > /dev/null        stress your system
 
 
-###### WARNING. When outputting large files to disk (1GB+): for HDDs consider the mechanical drive's age and performance; for SSDs consider the write wear. As well as warming the CPU, RND64 is quite capable of exhausting all hard drive space and reducing SSD lifetimes.
+###### WARNING. When using RND64 to generate large files (1GB+): for HDDs consider the mechanical drive's age and performance; for SSDs consider the potential write wear. As well as warming the CPU, RND64 is quite capable of exhausting all hard drive space and reducing SSD lifetimes.
+
+
+## Executables
+
++ [Latest Releases](https://github.com/Tinram/RND64/releases/latest)
+
+or
+
++ Linux: [rnd64](https://github.com/Tinram/RND64/raw/master/bin/rnd64)
++ Windows: [rnd64.exe](https://github.com/Tinram/RND64/raw/master/bin/rnd64.exe)
 
 
 ## Build
 
-In the directory containing the cloned repo / extracted zip files, compile with GCC:
+In the local directory containing the cloned repo / extracted zip files, compile with GCC:
 
 (or for Clang, just rename the makefiles)
 
@@ -122,7 +132,7 @@ Or move the RND64 executable to a location such as */usr/local/bin*  (location m
 
 RND64 is fast, but not that fast:
 
-+ Zero stream generation rates `-f` are decent on Linux (~8GB/sec on vanilla Core i3 Haswell 3.4GHz desktop CPU), and the pcg32_random generator `-a` is fast (~4GB/sec on same machine) compared to most other random stream generators.
++ Zero stream generation rates `-f` are decent on Linux (~8GB/sec on vanilla Core i3 Haswell 3.4GHz desktop CPU), and the [PCG](http://www.pcg-random.org/) random number generator `-a` is fast (~4GB/sec on same machine) compared to most other RNGs.
 
 + File generation rates are slower and subject to a multitude of factors including: OS, OS activity, kernel patches, HDD versus SSD drive, SSD interface and underlying SSD technology etc.
 
@@ -135,8 +145,8 @@ Multi-threading has its own speed impacts, such as thread-waiting and data strea
 
 ## Credits
 
-+ Professor Melissa E. O'Neill: creating the fast pcg_random number generator.
-+ Damir Cohadarevic: inspiration, highlighting pcg_random.
++ Professor Melissa E. O'Neill: creating the fast [PCG](http://www.pcg-random.org/) RNG.
++ Damir Cohadarevic: inspiration, highlighting PCG.
 + Aleksandr Sergeev: testing, recommendations.
 + MSDN: Windows crypto.
 + Ben Alpert: microsecond timer.
