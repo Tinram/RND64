@@ -16,9 +16,9 @@
 
 Generate large files (4GB+, non-sparse) and large streams of random data (200GB+) at fast generation rates (~8GB/sec stream output, Linux, Core i3 CPU, `-f` option).
 
-*What's the point of such large lumps of junk?*
+*What's the point of large lumps of junk?*
 
-Some uses are: file hashing, integrity tests, benchmarking, and network speed tests.
+Uses can be: file hashing, integrity tests, benchmarking, system stress testing, and network speed tests.
 
 A few Windows programs exist to create large files, and there are plenty of shell scripts using `dd` etc. I just needed something cross-platform with simple command-line options.
 
@@ -60,14 +60,14 @@ A few Windows programs exist to create large files, and there are plenty of shel
     rnd64 -f 100g | pv > /dev/null        stress your system
 
 
-###### WARNING: When dumping large files to disk (over 1GB) &ndash; for HDDs consider the mechanical drive's age and performance; for SSDs consider the write wear. As well as warming the CPU, RND64 is quite capable of exhausting all hard drive space and reducing SSD lifetimes.
+###### WARNING. When outputting large files to disk (1GB+): for HDDs consider the mechanical drive's age and performance; for SSDs consider the write wear. As well as warming the CPU, RND64 is quite capable of exhausting all hard drive space and reducing SSD lifetimes.
 
 
 ## Build
 
 In the directory containing the cloned repo / extracted zip files, compile with GCC:
 
-(or Clang, just rename the makefiles)
+(or for Clang, just rename the makefiles)
 
 ### Linux
 
@@ -122,7 +122,7 @@ Or move the RND64 executable to a location such as */usr/local/bin*  (location m
 
 RND64 is fast, but not that fast:
 
-+ Zero stream generation rates `-f` are decent on Linux (~8GB/sec, Core i3 Haswell 3.4GHz desktop CPU), and the pcg32_random generator `-a` is fast (~4GB/sec on same machine) compared to most other random byte generators.
++ Zero stream generation rates `-f` are decent on Linux (~8GB/sec on vanilla Core i3 Haswell 3.4GHz desktop CPU), and the pcg32_random generator `-a` is fast (~4GB/sec on same machine) compared to most other random stream generators.
 
 + File generation rates are slower and subject to a multitude of factors including: OS, OS activity, kernel patches, HDD versus SSD drive, SSD interface and underlying SSD technology etc.
 
@@ -130,7 +130,7 @@ In the code, there are faster ways to create files than using C's `fwrite()`, wh
 
 On Linux, `write()` can be up to 4 times faster than `fwrite()` on some machines (using a single-threaded version of RND64, with file descriptor unclosed).  However, `write()` will only transfer a maximum of 2.1GB, even on 64-bit systems [[write(2)](http://man7.org/linux/man-pages/man2/write.2.html)]. `fwrite()` does not have this limitation, and 4GB+ output is what I sought.
 
-Multi-threading has its own speed impacts, with thread-waiting and multiple memory buffers being combined.
+Multi-threading has its own speed impacts, such as thread-waiting and data streams being combined.
 
 
 ## Credits
@@ -138,7 +138,7 @@ Multi-threading has its own speed impacts, with thread-waiting and multiple memo
 + Professor Melissa E. O'Neill: creating the fast pcg_random number generator.
 + Damir Cohadarevic: inspiration, highlighting pcg_random.
 + Aleksandr Sergeev: testing, recommendations.
-+ MSDN: Windows crypto and free system memory.
++ MSDN: Windows crypto.
 + Ben Alpert: microsecond timer.
 
 
