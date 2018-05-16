@@ -3,11 +3,11 @@
 	* RND64
 	* rnd64.c
 	*
-	* Generate large files (4GB+, non-sparse) and large streams of random data as quickly as possible.
+	* Generate large files (4GB+, non-sparse) and large streams (200GB+) of random data as quickly as possible.
 	*
 	* @author        Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
-	* @version       0.38 mt
+	* @version       0.40 mt
 	* @license       GNU GPL version 3.0 (GPL v3); https://www.gnu.org/licenses/gpl-3.0.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
@@ -17,7 +17,6 @@
 	*
 	*                    further CPU optimisation examples:
 	*                                -mtune=native -march=native                    current CPU
-	*                                -march=core-avx-i -mtune=core-avx-i            Intel Ivy Bridge
 	*                                -march=core-avx2 -mtune=core-avx2              Intel Haswell
 	*                                -march=skylake-avx512 -mtune=skylake-avx512    Intel Skylake
 */
@@ -26,9 +25,10 @@
 #include "rnd64.h"
 
 
-/* global variables for thread functions */
+/* global variables */
+FILE* pFile;
 char* pFilename = NULL;
-uint64_t iBytes = 0;
+pcg32_random_t pcg32_random;
 
 
 int main(int iArgCount, char* aArgV[]) {
@@ -57,6 +57,9 @@ int main(int iArgCount, char* aArgV[]) {
 	/* create seed for rand() usage */
 	srand((unsigned int) time(NULL));
 
+	/* create seed for pcg_random() usage */
+	seed_pcg_random();
+
 	/* main variables */
 
 	/* detect number of CPU threads (logical cores, not physical cores, Intel i3 = 4: 2 cores + 2 threads) */
@@ -72,24 +75,16 @@ int main(int iArgCount, char* aArgV[]) {
 	#endif
 
 	int iSizeLen = strlen(aArgV[2]);
-	int iMSec = 0;
 	int64_t iNegCheck = 0;
 
-	unsigned int i = 0;
-	unsigned int j = 0;
 	unsigned int iFIndex = 0;
-	unsigned int iUnavailMB = 0;
-	uint64_t iFreeMemory = 0;
 	uint64_t iTotalBytes = 0;
-	uint64_t iBytesLocal = 0;
+	uint64_t iThreadBytes = 0;
 
 	char cUnit;
 	char sFileSize[iSizeLen];
-	char* aBuffer[iNumThreads];
 
-	FILE* pFile;
 	clock_t tStart = 0;
-	clock_t tDiff = 0;
 
 	/* function pointers */
 	void (*pFuncs[4]) = {
@@ -145,20 +140,25 @@ int main(int iArgCount, char* aArgV[]) {
 		return EXIT_FAILURE;
 	}
 
-	iFreeMemory = getFreeSystemMemory();
+	/* total bytes divided by threads */
+	iThreadBytes = iTotalBytes / iNumThreads;
 
-	/* bail out if required memory exceeds, or is likely to dangerously exhaust, free memory */
-	if (iTotalBytes > iFreeMemory) {
-		iUnavailMB = iTotalBytes / 1024 / 1024;
-		fprintf(stderr,"\n%s: insufficient memory to allocate %u MB.\nPlease use a smaller <size>\n\n", pFilename, iUnavailMB);
-		return EXIT_FAILURE;
+	Params_t params;
+	params.bytes = iThreadBytes;
+
+	if (aArgV[3] == NULL) {
+		params.filename = NULL;
 	}
+	else {
 
-	/* set global variable for thread functions */
-	iBytes = iTotalBytes / iNumThreads;
+		params.filename = aArgV[3];
+		pFile = fopen(aArgV[3], "wb");
 
-	/* copy global to local */
-	iBytesLocal = iBytes;
+		if (pFile == NULL) {
+			fprintf(stderr, "\n%s: output file cannot be written.\n(check write permissions / filename characters)\n\n", pFilename);
+			return EXIT_FAILURE;
+		}
+	}
 
 	/* timer start */
 	tStart = clock();
@@ -177,32 +177,18 @@ int main(int iArgCount, char* aArgV[]) {
 		iFIndex = 3;
 	}
 
-	/* allocate buffer and pass to thread function */
-	for (i = 0; i < iNumThreads; i++) {
-
-		aBuffer[i] = (char*) malloc(iBytesLocal + 1); /* +1 for 0 */
-
-		if (aBuffer[i] == NULL) {
-
-			iUnavailMB = iBytesLocal / 1024 / 1024;
-			fprintf(stderr, "\n%s: insufficient memory to allocate %u MB in thread buffer.\n\n", pFilename, iUnavailMB);
-
-			for (j = 0; j <= i; j++) { /* deallocate up to this i */
-				free(aBuffer[j]);
-			}
-
-			return EXIT_FAILURE;
-		}
+	/* pass params to thread function */
+	for (unsigned int i = 0; i < iNumThreads; i++) {
 
 		#ifdef __linux
-			pthread_create(&rThreadID[i], NULL, pFuncs[iFIndex], aBuffer[i]);
+			pthread_create(&rThreadID[i], NULL, pFuncs[iFIndex], &params);
 		#elif _WIN64
-			rThreadID[i] = CreateThread(NULL, 0, pFuncs[iFIndex], aBuffer[i], 0, &dwThreadID);
+			rThreadID[i] = CreateThread(NULL, 0, pFuncs[iFIndex], &params, 0, &dwThreadID);
 		#endif
 	}
 
-	/* thread wait - avoid seg fault on larger files */
-	for (i = 0; i < iNumThreads; i++) {
+	/* thread wait and join */
+	for (unsigned int i = 0; i < iNumThreads; i++) {
 
 		#ifdef __linux
 			pthread_join(rThreadID[i], NULL);
@@ -211,309 +197,466 @@ int main(int iArgCount, char* aArgV[]) {
 		#endif
 	}
 
-	/* create stream if no specified [file] argument, then exit */
-	if (aArgV[3] == NULL) {
+	if (params.filename != NULL || STREAM_STATS) { /* file output or STREAM_STATS */
 
-		for (i = 0; i < iNumThreads; i++) {
-			fwrite(aBuffer[i], sizeof(char), iBytesLocal, stdout);
+		int iMSec = 0;
+		clock_t tDiff = 0;
+
+		if (params.filename != NULL) {
+			fclose(pFile);
+			printf("\n%s generated\n\nsize: %"PRId64" bytes\n", aArgV[3], iTotalBytes);
 		}
 
-		for (i = 0; i < iNumThreads; i++) { /* deallocate */
-			free(aBuffer[i]);
+		/* timer end */
+		tDiff = clock() - tStart;
+
+		/* timer display, by Ben Alpert */
+		iMSec = tDiff * 1000 / CLOCKS_PER_SEC;
+
+		if (STREAM_STATS) {
+			fprintf(stderr, "time: %d s %d ms\n", iMSec / 1000, iMSec % 1000);
+		}
+		else {
+			printf("time: %d s %d ms\n", iMSec / 1000, iMSec % 1000);
 		}
 
-		return EXIT_SUCCESS;
-	}
+		/* MB/s calculation for size over 50MB */
+		if (iTotalBytes > 52428800) {
 
-	/* write buffer to file */
-	pFile = fopen(aArgV[3], "wb");
-
-	if (pFile != NULL) {
-
-		for (i = 0; i < iNumThreads; i++) {
-			fwrite(aBuffer[i] , sizeof(char), iBytesLocal, pFile);
-		}
-	}
-	else {
-
-		for (i = 0; i < iNumThreads; i++) { /* deallocate */
-			free(aBuffer[i]);
+			if (STREAM_STATS) {
+				fprintf(stderr, "MB/s: %0.2f\n", (float) ((iTotalBytes * cMBRECIP * cMBRECIP) / (iMSec * 0.001)));
+			}
+			else {
+				printf("MB/s: %0.2f\n", (float) ((iTotalBytes * cMBRECIP * cMBRECIP) / (iMSec * 0.001)));
+			}
 		}
 
-		fprintf(stderr, "\n%s: output file cannot be written.\n(check write permissions / filename characters)\n\n", pFilename);
-		return EXIT_FAILURE;
+		printf("\n");
 	}
-
-	fclose(pFile);
-
-	/* deallocate */
-	for (i = 0; i < iNumThreads; i++) {
-		free(aBuffer[i]);
-	}
-
-	/* timer end */
-	tDiff = clock() - tStart;
-
-	printf("\n%s generated\n\nsize: %"PRId64" bytes\n", aArgV[3], iTotalBytes);
-
-	/* timer display, by Ben Alpert */
-	iMSec = tDiff * 1000 / CLOCKS_PER_SEC;
-	printf("time: %d s %d ms\n", iMSec / 1000, iMSec % 1000);
-
-	/* MB/s calculation for size over 50MB */
-	if (iTotalBytes > 52428800) {
-		printf("MB/s: %0.2f\n", (float) ((iTotalBytes * cMBRecip * cMBRecip) / (iMSec * 0.001)));
-	}
-
-	printf("\n");
 
 	return EXIT_SUCCESS;
 }
 
 
 /**
-	* Thread function: populate buffer with all ASCII characters.
+	* Seed the pcg_random generator.
 	*
-	* @param   void pointer buff, buffer
-	* @return  void* / null
+	* @param   void
+	* @return  void
 */
 
-#ifdef __linux
+void seed_pcg_random(void) {
 
-	void* generateAll(void* buff) {
+	/* set state */
+	pcg32_random.state ^= (uint64_t) time(NULL) ^ (uint64_t) &seed_pcg_random;
 
-		uint64_t i = 0;
-		uint64_t iBytesLocal = iBytes;
-		char* pBuffer = (char*) buff;
-		unsigned int iSeed = 0;
-
-		/* rand_r() seed for each thread (time() unsuitable) */
-		iSeed = rand();
-
-		for (i = 0; i < iBytesLocal; i++) {
-			pBuffer[i] = (rand_r(&iSeed) % 254) + 1; /* avoid 0 */
-		}
-
-		pBuffer[iBytesLocal] = '\0';
-		pthread_exit(NULL);
+	/* generate 12 ints for initial state to diverge */
+	for (unsigned int i = 0; i < 12; i++) {
+		pcg32_random_r(&pcg32_random);
 	}
-
-#elif _WIN64
-
-	DWORD WINAPI generateAll(LPVOID buff) {
-
-		uint64_t i = 0;
-		uint64_t iBytesLocal = iBytes;
-		char* pBuffer = (char*) buff;
-		static unsigned int iSeed = 3142;
-
-		/* srand() seed munger for each thread (time(), GetTickCount(), and rand() unsuitable) */
-		iSeed += (((unsigned int) time(NULL)) * 0.2);
-		srand(iSeed);
-
-		for (i = 0; i < iBytesLocal; i++) {
-			pBuffer[i] = (rand() % 254) + 1; /* avoid 0 */
-		}
-
-		pBuffer[iBytesLocal] = '\0';
-		return 0;
-	}
-
-#endif
+}
 
 
 /**
-	* Thread function: populate buffer with restricted ASCII character range (33 to 127).
+	* pcg32_random fast random number generator (minimal PCG32 version)
+	* (c) 2014 Professor Melissa E. O'Neill - pcg-random.org
+	* Apache License 2.0
 	*
-	* @param   void pointer buff, buffer
-	* @return  void* / null
+	* @param   pcg32_random_t* rng
+	* @return  uint32_t
 */
 
-#ifdef __linux
+inline uint32_t pcg32_random_r(pcg32_random_t* rng)
+{
+	uint64_t oldstate = rng->state;
 
-	void* generateRestricted(void* buff) {
+	/* advance internal state */
+	rng->state = oldstate * 6364136223846793005ULL + (rng->inc | 1);
 
-		uint64_t i = 0;
-		uint64_t iBytesLocal = iBytes;
-		char* pBuffer = (char*) buff;
-		unsigned int iSeed = 0;
+	/* calculate output function (XSH RR), uses old state for max ILP */
+	uint32_t xorshifted = ((oldstate >> 18u) ^ oldstate) >> 27u;
+	uint32_t rot = oldstate >> 59u;
 
-		iSeed = rand();
-
-		for (i = 0; i < iBytesLocal; i++) {
-			pBuffer[i] = (rand_r(&iSeed) % 94) + 33;
-		}
-
-		pBuffer[iBytesLocal] = '\0';
-		pthread_exit(NULL);
-	}
-
-#elif _WIN64
-
-	DWORD WINAPI generateRestricted(LPVOID buff) {
-
-		uint64_t i = 0;
-		uint64_t iBytesLocal = iBytes;
-		char* pBuffer = (char*) buff;
-		static unsigned int iSeed = 3142;
-
-		iSeed += (((unsigned int) time(NULL)) * 0.2);
-		srand(iSeed);
-
-		for (i = 0; i < iBytesLocal; i++) {
-			pBuffer[i] = (rand() % 94) + 33;
-		}
-
-		pBuffer[iBytesLocal] = '\0';
-		return 0;
-	}
-
-#endif
+	return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
+}
 
 
 /**
-	* Thread function: populate buffer with single character (0).
+	* Thread function: output random uints using pcg_random.
 	*
-	* @param   void pointer buff, buffer
+	* @param   void pointer st, params struct
 	* @return  void* / null
 */
 
 #ifdef __linux
-
-	void* generateSingleChar(void* buff) {
-
-		uint64_t iBytesLocal = iBytes;
-		char* pBuffer = (char*) buff;
-
-		memset(pBuffer, 48, iBytesLocal);
-		pBuffer[iBytesLocal] = '\0';
-		pthread_exit(NULL);
-	}
-
+	void* generateAll(void* st)
 #elif _WIN64
-
-	DWORD WINAPI generateSingleChar(LPVOID buff) {
-
-		uint64_t iBytesLocal = iBytes;
-		char* pBuffer = (char*) buff;
-
-		memset(pBuffer, 48, iBytesLocal);
-		pBuffer[iBytesLocal] = '\0';
-		return 0;
-	}
-
+	DWORD WINAPI generateAll(LPVOID st)
 #endif
+
+	{
+		Params_t* params = (Params_t*) st;
+		uint64_t iThreadBytes = params->bytes;
+
+		unsigned int iNumPages = iThreadBytes / cBUFFER;
+		unsigned int iNumBytes = cBUFFER / sizeof(unsigned int);
+		unsigned int iTailSize = iThreadBytes % cBUFFER;
+		uint32_t aBuffer[cBUFFER];
+
+		if (params->filename != NULL) { /* write to file */
+
+			for (unsigned int i = 0; i < iNumPages; i++) {
+
+				for (unsigned int j = 0; j < iNumBytes; j++) {
+					aBuffer[j] = pcg32_random_r(&pcg32_random);
+				}
+
+				fwrite(aBuffer, 1, cBUFFER, pFile);
+			}
+
+			if (iTailSize > 0) {
+
+				for (unsigned int j = 0; j < iNumBytes; j++) {
+					aBuffer[j] = pcg32_random_r(&pcg32_random);
+				}
+
+				fwrite(aBuffer, 1, iTailSize, pFile);
+			}
+		}
+		else { /* write to stdout */
+
+			for (unsigned int i = 0; i < iNumPages; i++) {
+
+				for (unsigned int j = 0; j < iNumBytes; j++) {
+					aBuffer[j] = pcg32_random_r(&pcg32_random);
+				}
+
+				fwrite(aBuffer, 1, cBUFFER, stdout);
+			}
+
+			if (iTailSize > 0) {
+
+				for (unsigned int j = 0; j < iNumBytes; j++) {
+					aBuffer[j] = pcg32_random_r(&pcg32_random);
+				}
+
+				fwrite(aBuffer, 1, iTailSize, stdout);
+			}
+		}
+
+#ifdef __linux
+		pthread_exit(NULL);
+#elif _WIN64
+		return 0;
+#endif
+
+	}
 
 
 /**
-	* Thread function: populate buffer with crypto-generated bytes.
+	* Thread function: output printable ASCII characters (33 to 127).
+	* Not fast, included to generate printable characters for my purposes.
 	*
-	* @param   void pointer, buff, buffer
+	* @param   void pointer st, params struct
+	* @return  void* / null
+*/
+
+#ifdef __linux
+	void* generateRestricted(void* st)
+#elif _WIN64
+	DWORD WINAPI generateRestricted(LPVOID st)
+#endif
+
+	{
+		Params_t* params = (Params_t*) st;
+		uint64_t iThreadBytes = params->bytes;
+
+		unsigned int iNumPages = iThreadBytes / cBUFFER;
+		unsigned int iNumBytes = cBUFFER / sizeof(char); /* sizeof(char) slow; hack: sizeof(unsigned int) faster but corrupted buffer */
+		unsigned int iTailSize = iThreadBytes % cBUFFER;
+		char aBuffer[cBUFFER];
+
+		#ifdef __linux
+			unsigned int iSeed = 0;
+			iSeed = rand();
+		#elif _WIN64
+			static unsigned int iSeed = 3142;
+			iSeed += (((unsigned int) time(NULL)) * 0.2);
+			srand(iSeed);
+		#endif
+
+		if (params->filename != NULL) { /* write to file */
+
+			for (unsigned int i = 0; i < iNumPages; i++) {
+
+				for (unsigned int j = 0; j < iNumBytes; j++) {
+
+					#ifdef __linux
+						aBuffer[j] = (rand_r(&iSeed) % 94) + 33;
+					#elif _WIN64
+						aBuffer[j] = (rand() % 94) + 33;
+					#endif
+				}
+
+				fwrite(aBuffer, 1, cBUFFER, pFile);
+			}
+
+			if (iTailSize > 0) {
+
+				for (unsigned int j = 0; j < iNumBytes; j++) {
+
+					#ifdef __linux
+						aBuffer[j] = (rand_r(&iSeed) % 94) + 33;
+					#elif _WIN64
+						aBuffer[j] = (rand() % 94) + 33;
+					#endif
+				}
+
+				fwrite(aBuffer, 1, iTailSize, pFile);
+			}
+		}
+		else { /* write to stdout */
+
+			for (unsigned int i = 0; i < iNumPages; i++) {
+
+				for (unsigned int j = 0; j < iNumBytes; j++) {
+
+					#ifdef __linux
+						aBuffer[j] = (rand_r(&iSeed) % 94) + 33;
+					#elif _WIN64
+						aBuffer[j] = (rand() % 94) + 33;
+					#endif
+				}
+
+				fwrite(aBuffer, 1, cBUFFER, stdout);
+			}
+
+			if (iTailSize > 0) {
+
+				for (unsigned int j = 0; j < iNumBytes; j++) {
+
+					#ifdef __linux
+						aBuffer[j] = (rand_r(&iSeed) % 94) + 33;
+					#elif _WIN64
+						aBuffer[j] = (rand() % 94) + 33;
+					#endif
+				}
+
+				fwrite(aBuffer, 1, iTailSize, stdout);
+			}
+		}
+
+#ifdef __linux
+		pthread_exit(NULL);
+#elif _WIN64
+		return 0;
+#endif
+
+	}
+
+
+/**
+	* Thread function: output zero character.
+	*
+	* @param   void pointer st, params struct
+	* @return  void* / null
+*/
+
+#ifdef __linux
+	void* generateSingleChar(void* st)
+#elif _WIN64
+	DWORD WINAPI generateSingleChar(LPVOID st)
+#endif
+
+	{
+		Params_t* params = (Params_t*) st;
+		uint64_t iThreadBytes = params->bytes;
+
+		unsigned int iNumPages = iThreadBytes / cBUFFER;
+		unsigned int iNumBytes = cBUFFER / sizeof(unsigned int);
+		unsigned int iTailSize = iThreadBytes % cBUFFER;
+		unsigned int aBuffer[cBUFFER]; /* slightly faster (just) using array on stack than heap (malloc); int_fast8_t tried */
+
+		if (params->filename != NULL) { /* write to file */
+
+			for (unsigned int i = 0; i < iNumPages; i++) {
+				memset(aBuffer, 48, iNumBytes);
+				fwrite(aBuffer, 1, cBUFFER, pFile);
+			}
+
+			if (iTailSize > 0) {
+				memset(aBuffer, 48, iNumBytes);
+				fwrite(aBuffer, 1, iTailSize, pFile);
+			}
+		}
+		else { /* write to stdout */
+
+			for (unsigned int i = 0; i < iNumPages; i++) {
+				memset(aBuffer, 48, iNumBytes);
+				fwrite(aBuffer, 1, cBUFFER, stdout);
+			}
+
+			if (iTailSize > 0) {
+				memset(aBuffer, 48, iNumBytes);
+				fwrite(aBuffer, 1, iTailSize, stdout);
+			}
+		}
+
+#ifdef __linux
+		pthread_exit(NULL);
+#elif _WIN64
+		return 0;
+#endif
+
+	}
+
+
+/**
+	* Thread function: output crypto-generated bytes.
+	*
+	* @param   void pointer st, params struct
 	* @return  void* / null
 */
 
 #ifdef __linux
 
-	void* generateCrypto(void* buff) {
+	void* generateCrypto(void* st) {
 
-		uint64_t iBytesLocal = iBytes;
-		char* pBuffer = (char*) buff;
+		Params_t* params = (Params_t*) st;
+		uint64_t iThreadBytes = params->bytes;
+
+		unsigned int iNumPages = iThreadBytes / cBUFFER;
+		unsigned int iNumBytes = cBUFFER / sizeof(char);
+		unsigned int iTailSize = iThreadBytes % cBUFFER;
+		unsigned int aBuffer[cBUFFER];
 		FILE* pUrand;
 
 		if ((pUrand = fopen(RANDOM_PATH, "r")) == NULL) {
-
-			free(pBuffer); /* deallocate */
 			fprintf(stderr, "\n%s: secure data generation unavailable.\n\n", pFilename);
 		}
-		else if (fread(pBuffer, 1, iBytesLocal, pUrand) != iBytesLocal) {
+		else if (params->filename != NULL) { /* write to file */
+
+			for (unsigned int i = 0; i < iNumPages; i++) {
+
+				if (fread(aBuffer, 1, iNumBytes, pUrand) != iNumBytes) {
+					fprintf(stderr, "\n%s: insufficient crypto random bytes available.\n\n", pFilename);
+					goto exit;
+				}
+
+				fwrite(aBuffer, 1, cBUFFER, pFile);
+			}
+
+			if (iTailSize > 0) {
+
+				if (fread(aBuffer, 1, iNumBytes, pUrand) != iNumBytes) {
+					fprintf(stderr, "\n%s: insufficient crypto random bytes available.\n\n", pFilename);
+					goto exit;
+				}
+
+				fwrite(aBuffer, 1, iTailSize, pFile);
+			}
+		}
+		else { /* write to stdout */
+
+			for (unsigned int i = 0; i < iNumPages; i++) {
+
+				if (fread(aBuffer, 1, iNumBytes, pUrand) != iNumBytes) {
+					fprintf(stderr, "\n%s: insufficient crypto random bytes available.\n\n", pFilename);
+					goto exit;
+				}
+
+				fwrite(aBuffer, 1, cBUFFER, stdout);
+			}
+
+			if (iTailSize > 0) {
+
+				if (fread(aBuffer, 1, iNumBytes, pUrand) != iNumBytes) {
+					fprintf(stderr, "\n%s: insufficient crypto random bytes available.\n\n", pFilename);
+					goto exit;
+				}
+
+				fwrite(aBuffer, 1, iTailSize, stdout);
+			}
+		}
+
+		exit:
 
 			fclose(pUrand);
-			free(pBuffer); /* deallocate */
-			fprintf(stderr, "\n%s: insufficient crypto random bytes available.\n\n", pFilename);
-		}
-		else { /* buffer populated, close stream */
 
-			fclose(pUrand);
-			pBuffer[iBytesLocal] = '\0';
-		}
-
-		pthread_exit(NULL);
+			pthread_exit(NULL);
 	}
 
 #elif _WIN64
 
-	DWORD WINAPI generateCrypto(LPVOID buff) {
+	DWORD WINAPI generateCrypto(LPVOID st) {
 
-		uint64_t iBytesLocal = iBytes;
-		unsigned int iErrFlag = 0;
-		char cS;
-		char* pBuffer = (char*) buff;
+		Params_t* params = (Params_t*) st;
+		uint64_t iThreadBytes = params->bytes;
+
+		unsigned int iNumPages = iThreadBytes / cBUFFER;
+		unsigned int iNumBytes = cBUFFER / sizeof(char);
+		unsigned int iTailSize = iThreadBytes % cBUFFER;
 		HCRYPTPROV rCryptHandle = 0;
+		char aBuffer[cBUFFER];
+		char cS;
 
 		if (CryptAcquireContext(&rCryptHandle, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT) == FALSE) {
-
-			free(pBuffer); /* deallocate */
-			iErrFlag = 1;
 			fprintf(stderr, "\n%s: secure data generation unavailable (CryptAcquireContext failed).\n\n", pFilename);
 		}
+		else {
 
-		if ( ! iErrFlag) {
+			if (params->filename != NULL) { /* write to file */
 
-			for (uint64_t i = 0; i < iBytesLocal; i++) {
+				for (unsigned int i = 0; i < iNumPages; i++) {
 
-				CryptGenRandom(rCryptHandle, 1, (BYTE*) &cS);
-				pBuffer[i] = cS;
+					for (unsigned int j = 0; j < iNumBytes; j++) {
+						CryptGenRandom(rCryptHandle, 1, (BYTE*) &cS);
+						aBuffer[j] = cS;
+					}
+
+					fwrite(aBuffer, 1, cBUFFER, pFile);
+				}
+
+				if (iTailSize > 0) {
+
+					for (unsigned int j = 0; j < iNumBytes; j++) {
+						CryptGenRandom(rCryptHandle, 1, (BYTE*) &cS);
+						aBuffer[j] = cS;
+					}
+
+					fwrite(aBuffer, 1, iTailSize, pFile);
+				}
 			}
+			else { /* write to stdout */
 
-			pBuffer[iBytesLocal] = '\0';
+				for (unsigned int i = 0; i < iNumPages; i++) {
+
+					for (unsigned int j = 0; j < iNumBytes; j++) {
+						CryptGenRandom(rCryptHandle, 1, (BYTE*) &cS);
+						aBuffer[j] = cS;
+					}
+
+					fwrite(aBuffer, 1, cBUFFER, stdout);
+				}
+
+				if (iTailSize > 0) {
+
+					for (unsigned int j = 0; j < iNumBytes; j++) {
+						CryptGenRandom(rCryptHandle, 1, (BYTE*) &cS);
+						aBuffer[j] = cS;
+					}
+
+					fwrite(aBuffer, 1, iTailSize, stdout);
+				}
+			}
 
 			if (CryptReleaseContext(rCryptHandle, 0)) {
 				rCryptHandle = 0;
 			}
+
 		}
 
 		return 0;
-	}
-
-#endif
-
-
-/**
-	* Attempt to find free memory available for allocation.
-	* Windows reporting through MEMORYSTATUSEX seems accurate.
-	* Linux is trickier: what is reported as free in conjunction with considerable buffering and caching.
-	*
-	* @return  integer
-*/
-
-#ifdef __linux
-
-	uint64_t getFreeSystemMemory(void) {
-
-		/**
-			* Derived from an example by Travis Gockel.
-			* Linux apparently provides only total and free (unbuffered) memory values reliably.
-			* Found that 0.5GB margin on kernel 4.4 with 6GB RAM is not quite enough (e.g 5g okay, 5300m locks system), 0.75GB required.
-		*/
-
-		long int iPages = sysconf(_SC_PHYS_PAGES);
-		long int iPageSize = sysconf(_SC_PAGE_SIZE);
-
-		return (iPages * iPageSize) - cSafetyChunk; /* assumes system has at least 1GB total memory */
-	}
-
-#elif _WIN64
-
-	uint64_t getFreeSystemMemory(void) {
-
-		/* from MSDN */
-
-		MEMORYSTATUSEX stMemState;
-
-		stMemState.dwLength = sizeof(stMemState);
-		GlobalMemoryStatusEx(&stMemState);
-
-		return stMemState.ullAvailPhys;
 	}
 
 #endif
@@ -537,5 +680,5 @@ void menu(char* const pFName) {
 	printf("\n\t\t-f\t single char    (fastest)");
 	printf("\n\t\t-r\t chars 33-126   (restrict)");
 	printf("\n\t\t-c\t crypto bytes");
-	printf("\n\n\t\tsize\t 1K, 100M, 3G\n\n");
+	printf("\n\n\t\tsize\t 1K, 100M, 8G\n\n");
 }
