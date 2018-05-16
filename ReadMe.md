@@ -60,7 +60,7 @@ A few Windows programs exist to create large files, and there are plenty of shel
     rnd64 -f 100g | pv > /dev/null        stress your system
 
 
-###### WARNING: For large file dumps to disk (over 1GB) &ndash; for HDDs consider the drive's age and performance; for SSDs consider the write wear. As well as warming the CPU, RND64 is quite capable of filling up drive space and reducing SSD lifetime.
+###### WARNING: When dumping large files to disk (over 1GB) &ndash; for HDDs consider the mechanical drive's age and performance; for SSDs consider the write wear. As well as warming the CPU, RND64 is quite capable of exhausting all hard drive space and reducing SSD lifetimes.
 
 
 ## Build
