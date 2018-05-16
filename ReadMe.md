@@ -5,7 +5,7 @@
 
 #### Linux and Windows
 
-##### RND64 v.0.38
+##### RND64 v.0.40
 
 
 [1]: https://tinram.github.io/images/rnd64.png
@@ -14,7 +14,7 @@
 
 ## Purpose
 
-Generate large files (non-sparse) and large streams of random data (4GB+) at fast generation rates (~3GB/sec stream output, Linux, Core i3 CPU, `-f` option).
+Generate large files (4GB+, non-sparse) and large streams of random data (200GB+) at fast generation rates (~8GB/sec stream output, Linux, Core i3 CPU, `-f` option).
 
 *What's the point of such large lumps of junk?*
 
@@ -37,13 +37,13 @@ A few Windows programs exist to create large files, and there are plenty of shel
 
 #### Options
 
-    -a     (all)             characters 1 to 255        includes control codes
+    -a     (all)             binary characters          includes control codes
     -f     (fastest)         character zero (48)        fastest generator
     -r     (restrict)        characters 33 to 126       7-bit printable ASCII, safe for terminal output
     -c     (crypto)          crypto-sourced bytes       Linux: /dev/urandom, Windows: CryptGenRandom
                                                             (much slower byte generation)
 
-    size   1K, 100M, 3G
+    size   1K, 100M, 8G
 
 
 ### Usage Examples
@@ -51,16 +51,16 @@ A few Windows programs exist to create large files, and there are plenty of shel
     rnd64.exe or rnd64   (Windows)        display command-line options, as above
     ./rnd64              (Linux)
 
-    rnd64 -a 1k f.txt                     output 1kB of random bytes, in the range 1 to 255, to the file 'f.txt'
+    rnd64 -a 1k f.txt                     output 1kB of random bytes to the file 'f.txt'
     rnd64 -f 1k f.txt                     output 1kB of zeros to 'f.txt'
     rnd64 -r 1k f.txt                     output a restricted range of 7-bit ASCII characters (33 to 126) to 'f.txt'
-    rnd64 -f 500m | pv > /dev/null        send 500MB of zeros to /dev/null with 'pv' displaying the throughput rate (Linux)
+    rnd64 -f 4g | pv > /dev/null          send 4GB of zeros to /dev/null with 'pv' displaying the throughput rate (Linux)
     rnd64 -c 1k | ent                     pipe 1kB of crypto bytes to the program 'ent'
     rnd64 -a 1k | nc 192.168.1.20 80      pipe 1kB of random bytes to 'netcat' to send to 192.168.1.20 on port 80
-    rnd64 -f 6g | pv > /dev/null          with lots of RAM - stress your system!
+    rnd64 -f 100g | pv > /dev/null        stress your system
 
 
-###### WARNING: RND64 depends upon the free memory of the system for data dumping (writing to a file in a single action, not in chunks). For large file dumps (over 1GB) consider first the free memory, and if using a mechanical hard drive, the drive's age and performance. On Linux systems, a large GB value that works on a freshly booted system, may not work on the same busy long-running system, because of caching and application requirements.
+###### WARNING: For large file dumps to disk (over 1GB) &ndash; for HDDs consider the drive's age and performance; for SSDs consider the write wear. As well as warming the CPU, RND64 is quite capable of filling up drive space and reducing SSD lifetime.
 
 
 ## Build
@@ -98,6 +98,7 @@ compile manually:
 
     -march=core-avx2 -mtune=core-avx2              Intel Haswell
     -march=skylake-avx512 -mtune=skylake-avx512    Intel Skylake
+    -flto
 
 
 ## Other
@@ -121,27 +122,22 @@ Or move the RND64 executable to a location such as */usr/local/bin*  (location m
 
 RND64 is fast, but not that fast:
 
-+ Zero stream generation rates are decent on Linux with plenty of RAM available (~3GB/sec, Core i3 Haswell 3.4GHz desktop CPU, 12GB RAM [1GB/sec on same PC with 4GB RAM]). Zero streams keep up approximately with `dd`. (Windows running on a Core i7 Haswell 3.6GHz desktop CPU, with 16GB RAM, manages 0.94GB/s.)
++ Zero stream generation rates `-f` are decent on Linux (~8GB/sec, Core i3 Haswell 3.4GHz desktop CPU), and the pcg32_random generator `-a` is fast (~4GB/sec on same machine) compared to most other random byte generators.
 
-+ File generation rates will be subject to a multitude of factors including: OS, OS activity, kernel patches, HDD versus SSD drive, SSD interface and underlying SSD technology etc.
++ File generation rates are slower and subject to a multitude of factors including: OS, OS activity, kernel patches, HDD versus SSD drive, SSD interface and underlying SSD technology etc.
 
 In the code, there are faster ways to create files than using C's `fwrite()`, which RND64 uses.
 
 On Linux, `write()` can be up to 4 times faster than `fwrite()` on some machines (using a single-threaded version of RND64, with file descriptor unclosed).  However, `write()` will only transfer a maximum of 2.1GB, even on 64-bit systems [[write(2)](http://man7.org/linux/man-pages/man2/write.2.html)]. `fwrite()` does not have this limitation, and 4GB+ output is what I sought.
 
-Multi-threading has its own speed impacts, with thread-waiting and multiple memory buffers being combined. The single-threaded version of RND64 is slower for data generation but faster for file output.
-
-Chunking output on memory boundaries is another technique used by programmers. So far in my experiments, this has not produced favourable results with multi-threading.
-
-### Meltdown / Spectre Patches
-
-Meltdown / 'Spectre Variant 1' Linux kernel patches impart a slowdown of approximately 10% on RND64 data generation in memory (kernel 4.4).
+Multi-threading has its own speed impacts, with thread-waiting and multiple memory buffers being combined.
 
 
 ## Credits
 
++ Professor Melissa E. O'Neill: creating the fast pcg_random number generator.
++ Damir Cohadarevic: inspiration, highlighting pcg_random.
 + Aleksandr Sergeev: testing, recommendations.
-+ Travis Gockel: Linux free memory report.
 + MSDN: Windows crypto and free system memory.
 + Ben Alpert: microsecond timer.
 
