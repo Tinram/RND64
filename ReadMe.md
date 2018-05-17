@@ -16,7 +16,7 @@
 
 Generate large files (4GB+, non-sparse) and large streams of random data (200GB+) at fast generation rates (~8GB/sec stream output, Linux, Core i3 CPU, `-f` option).
 
-*What's the point of large lumps of junk?*
+*What's the point of lumps of junk?*
 
 Uses can be: file hashing, integrity tests, benchmarking, system stress testing, and network speed tests.
 
@@ -65,9 +65,7 @@ A few Windows programs exist to create large files, and there are plenty of shel
 
 ## Executables
 
-+ [Latest Releases](https://github.com/Tinram/RND64/releases/latest)
-
-or
+Download from [Releases](https://github.com/Tinram/RND64/releases/latest) or directly:
 
 + Linux: [rnd64](https://github.com/Tinram/RND64/raw/master/bin/rnd64)
 + Windows: [rnd64.exe](https://github.com/Tinram/RND64/raw/master/bin/rnd64.exe)
