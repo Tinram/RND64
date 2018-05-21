@@ -16,8 +16,7 @@
 
 Generate large files (4GB+, non-sparse) and large streams of random data (200GB+) at fast generation rates (~8GB/sec stream output, Linux, Core i3 CPU, `-f` option).
 
-*What's the point of lumps of junk?*
-
+*What's the point of lumps of junk?*  
 Uses can be: file hashing, integrity tests, benchmarking, system stress testing, and network speed tests.
 
 A few Windows programs exist to create large files, and there are plenty of shell scripts using `dd` etc. I just needed something cross-platform with simple command-line options.
@@ -128,11 +127,19 @@ Or move the RND64 executable to a location such as */usr/local/bin*  (location m
 
 ## Speed
 
-RND64 is fast, but not that fast:
+RND64 is fast:
+
+        martin@xyz ~ $ rnd64 -f 4g | pv > /dev/null
+        4GiB 0:00:00 [8.51GiB/s] [  <=>
+
+        martin@xyz ~ $ dd if=/dev/zero of=/dev/null bs=4G count=1 iflag=fullblock
+        4294967296 bytes (4.3 GB, 4.0 GiB) copied, 0.959431 s, 4.5 GB/s
 
 + Zero stream generation rates `-f` are decent on Linux (~8GB/sec on vanilla Core i3 Haswell 3.4GHz desktop CPU), and the [PCG](http://www.pcg-random.org/) random number generator `-a` is fast (~4GB/sec on same machine) compared to most other RNGs.
 
 + File generation rates are slower and subject to a multitude of factors including: OS, OS activity, kernel patches, HDD versus SSD drive, SSD interface and underlying SSD technology etc.
+
+... but not that fast:
 
 In the code, there are faster ways to create files than using C's `fwrite()`, which RND64 uses.
 
