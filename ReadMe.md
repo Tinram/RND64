@@ -59,7 +59,7 @@ A few Windows programs exist to create large files, and there are plenty of shel
     rnd64 -f 100g | pv > /dev/null        stress your system
 
 
-###### WARNING. When using RND64 to generate large files (1GB+): for HDDs consider the mechanical drive's age and performance; for SSDs consider the potential write wear. As well as warming the CPU, RND64 is quite capable of exhausting all hard drive space and reducing SSD lifetimes.
+###### WARNING. When using RND64 to generate large files (1GB+): for HDDs consider the mechanical drive's age and performance; for SSDs consider the potential write wear. As well as warming the CPU, RND64 is quite capable of exhausting all hard drive space, finishing off a failing HDD, and reducing SSD lifetimes.
 
 
 ## Executables
@@ -101,11 +101,10 @@ compile manually:
 #### Further Optimisation
 
     -mtune=native -march=native                    current CPU
-    gcc -Q -march=native --help=target             show -march/-mtune native CPU parameters
+    -flto
 
     -march=core-avx2 -mtune=core-avx2              Intel Haswell
     -march=skylake-avx512 -mtune=skylake-avx512    Intel Skylake
-    -flto
 
 
 ## Other
@@ -140,9 +139,9 @@ RND64 is fast:
 
 + Zero stream generation rates `-f` are decent on Linux (~8GB/sec on vanilla Core i3 Haswell 3.4GHz desktop CPU), and the [PCG](http://www.pcg-random.org/) random number generator `-a` is fast (~4GB/sec on same machine) compared to most other RNGs.
 
-+ File generation rates are slower and subject to a multitude of factors including: OS, OS activity, kernel patches, HDD versus SSD drive, SSD interface and underlying SSD technology etc.
-
 ... but not that fast:
+
++ File generation rates are slower and subject to a multitude of factors including: OS, OS activity, kernel patches, HDD versus SSD drive, SSD interface and underlying SSD technology etc.
 
 In the code, there are faster ways to create files than using C's `fwrite()`, which RND64 uses.
 
