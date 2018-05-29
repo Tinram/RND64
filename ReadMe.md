@@ -14,7 +14,7 @@
 
 ## Purpose
 
-Generate large files (4GB+, non-sparse) and large streams of random data (200GB+) at fast generation rates (stream output on Linux: ~8.5GB/sec vanilla i3 desktop, ~3.6GB/sec AWS microinstance).
+Generate large files (4GB+, non-sparse) and large streams of random data (200GB+) at fast generation rates (stream output on Linux: ~8.5GB/sec vanilla i3 desktop, ~4.6GB/sec AWS microinstance).
 
 *What's the point of lumps of junk?*  
 Uses can be: file hashing, integrity tests, benchmarking, system stress testing, and network speed tests.
@@ -135,7 +135,7 @@ RND64 is fast:
         4294967296 bytes (4.3 GB, 4.0 GiB) copied, 0.959431 s, 4.5 GB/s
 
         [ec2-user@ip-172-31-7-109 ~]$ rnd64 -f 4g | pv > /dev/null
-        4GiB 0:00:01 [3.75GiB/s] [     <=>     ]
+        4GiB 0:00:00 [4.61GiB/s] [     <=>     ]
 
 + Zero stream generation rates `-f` are decent on Linux (~8GB/sec on vanilla Core i3 Haswell 3.4GHz desktop CPU), and the [PCG](http://www.pcg-random.org/) random number generator `-a` is fast (~4GB/sec on same machine) compared to most other RNGs.
 
