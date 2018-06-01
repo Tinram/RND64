@@ -17,7 +17,7 @@
 Generate large files (4GB+, non-sparse) and large streams of random data (200GB+) at fast generation rates (stream output on Linux: ~8.5GB/sec vanilla i3 desktop, ~4.6GB/sec AWS microinstance).
 
 *What's the point of lumps of junk?*  
-Uses can be: file hashing, integrity tests, benchmarking, system stress testing, and network speed tests.
+Uses can be: file hashing, integrity tests, SSD and system benchmarking, and network speed tests.
 
 A few Windows programs exist to create large files, and there are plenty of shell scripts using `dd` etc. I just needed something cross-platform with simple command-line options.
 
@@ -59,7 +59,7 @@ A few Windows programs exist to create large files, and there are plenty of shel
     rnd64 -f 100g | pv > /dev/null        stress your system
 
 
-###### WARNING. When using RND64 to generate large files (1GB+): for HDDs consider the mechanical drive's age and performance; for SSDs consider the potential write wear. As well as warming the CPU, RND64 is quite capable of exhausting all hard drive space, finishing off a failing HDD, and reducing SSD lifetimes.
+###### WARNING. When using RND64 to generate large files (1GB+): for HDDs consider the mechanical drive's age and performance; for SSDs consider the potential write wear. As well as warming the CPU, RND64 is quite capable of exhausting all drive space, finishing off failing HDDs, and reducing SSD lifetimes.
 
 
 ## Executables
@@ -141,7 +141,7 @@ RND64 is fast:
 
 ... but not that fast:
 
-+ File generation rates are slower and subject to a multitude of factors including: OS, OS activity, kernel patches, HDD versus SSD drive, SSD interface and underlying SSD technology etc.
++ File generation rates are slower and subject to a multitude of factors including: OS, OS activity, kernel version, kernel patches, HDD versus SSD drive, SSD interface and underlying SSD technology etc.
 
 In the code, there are faster ways to create files than using C's `fwrite()`, which RND64 uses.
 
