@@ -25,7 +25,6 @@ A few Windows programs exist to create large files, and there are plenty of shel
 ## OS Support
 
 + Linux x64
-
 + Windows x64
 
 
@@ -121,25 +120,31 @@ Or move the RND64 executable to a location such as */usr/local/bin*  (location m
 
 #### Windows
 
-[Windows/Super key + Break] > Advanced tab > Environmental Variables button > click Path line > Edit button > Variable value - append at the end of existing line information: *C:\directory\path\to\rnd64.exe\;*
+[Windows/Super key + Break] > Advanced tab > Environmental Variables button > click Path line > Edit button > Variable value &ndash; append at the end of existing line information: *C:\directory\path\to\rnd64.exe\;*
 
 
 ## Speed
 
-RND64 is fast:
+**RND64 is fast:**
 
-        martin@xyz ~ $ rnd64 -f 4g | pv > /dev/null
-        4GiB 0:00:00 [8.51GiB/s] [  <=>  ]
+    martin@xyz ~ $ rnd64 -f 4g | pv > /dev/null
+    4GiB 0:00:00 [8.51GiB/s] [  <=>  ]
 
-        martin@xyz ~ $ dd if=/dev/zero of=/dev/null bs=4G count=1 iflag=fullblock
-        4294967296 bytes (4.3 GB, 4.0 GiB) copied, 0.959431 s, 4.5 GB/s
+&nbsp;&nbsp;(i3-4170 CPU 3.70GHz, 4.4 kernel)
 
-        [ec2-user@ip-172-31-7-109 ~]$ rnd64 -f 4g | pv > /dev/null
-        4GiB 0:00:00 [4.61GiB/s] [     <=>     ]
+    martin@xyz ~ $ dd if=/dev/zero of=/dev/null bs=4G count=1 iflag=fullblock
+    4294967296 bytes (4.3 GB, 4.0 GiB) copied, 0.959431 s, 4.5 GB/s
 
-+ Zero stream generation rates `-f` are decent on Linux (~8GB/sec on vanilla Core i3 Haswell 3.4GHz desktop CPU), and the [PCG](http://www.pcg-random.org/) random number generator `-a` is fast (~4GB/sec on same machine) compared to most other RNGs.
+&nbsp;&nbsp;(`dd` on the same machine)
 
-... but not that fast:
+    [ec2-user@ip-172-31-7-109 ~]$ rnd64 -f 4g | pv > /dev/null
+    4GiB 0:00:00 [4.61GiB/s] [     <=>     ]
+
+&nbsp;&nbsp;(AWS Xeon E5-2670 2.50GHz, single core)
+
++ Zero stream generation rates `-f` are decent on Linux (~8GB/sec on vanilla i3-4170), and the [PCG](http://www.pcg-random.org/) random number generator `-a` is pretty fast (~4GB/sec on same CPU) compared to most other RNGs.
+
+**... but not that fast:**
 
 + File generation rates are slower and subject to a multitude of factors including: OS, OS activity, kernel version, kernel patches, HDD versus SSD drive, SSD interface and underlying SSD technology etc.
 
@@ -152,7 +157,7 @@ Multi-threading has its own speed impacts, such as thread-waiting and data strea
 
 ## Credits
 
-+ Professor Melissa E. O'Neill: creating the fast [PCG](http://www.pcg-random.org/) RNG.
++ Professor Melissa E. O'Neill: creator of the fast [PCG](http://www.pcg-random.org/) RNG.
 + Damir Cohadarevic: inspiration, highlighting PCG.
 + Aleksandr Sergeev: testing, recommendations.
 + MSDN: Windows crypto.
