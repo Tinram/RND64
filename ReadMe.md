@@ -1,7 +1,7 @@
 
 # RND64
 
-### Multi-threaded 64-bit random data generator.
+### Fast multi-threaded 64-bit data generator.
 
 #### Linux and Windows
 
@@ -14,10 +14,10 @@
 
 ## Purpose
 
-Generate large files (4GB+, non-sparse) and large streams of random data (200GB+) at fast generation rates (stream output on Linux: ~8.5GB/sec vanilla i3 desktop, ~4.6GB/sec AWS microinstance).
+Generate large files (4GB+, non-sparse) and large streams of random/fixed character data (200GB+) at fast generation rates (stream output on Linux: ~8.5GB/sec vanilla i3 desktop, ~4.6GB/sec AWS microinstance).
 
 *What's the point of lumps of junk?*  
-Uses can be: file hashing, integrity tests, SSD and system benchmarking, and network speed tests.
+Uses can be: file hashing, integrity tests, system stress testing, and network speed tests.
 
 A few Windows programs exist to create large files, and there are plenty of shell scripts using `dd` etc. I just needed something cross-platform with simple command-line options.
 
@@ -38,8 +38,7 @@ A few Windows programs exist to create large files, and there are plenty of shel
     -a     (all)             binary characters          includes control codes
     -f     (fastest)         character zero (48)        fastest generator
     -r     (restrict)        characters 33 to 126       7-bit printable ASCII, safe for terminal output
-    -c     (crypto)          crypto-sourced bytes       Linux: /dev/urandom, Windows: CryptGenRandom
-                                                            (much slower byte generation)
+    -c     (crypto)          crypto-sourced bytes       Linux: /dev/urandom, Windows: CryptGenRandom (slow)
 
     size   1K, 100M, 8G
 
