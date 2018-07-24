@@ -1,7 +1,7 @@
 
 # RND64
 
-### Fast multi-threaded 64-bit data generator.
+### Fast multi-threaded 64-bit data generator for benchmarks and stress tests.
 
 #### Linux and Windows
 
@@ -14,12 +14,12 @@
 
 ## Purpose
 
-Generate large files (4GB+, non-sparse) and large streams of random/fixed character data (200GB+) at fast generation rates (stream output on Linux: ~8.5GB/sec vanilla i3 desktop, ~4.6GB/sec AWS microinstance).
+Generate large files (4GB+, non-sparse) and large streams of random/fixed character data (200GB+) at fast generation rates (zero stream output on Linux: ~8.5GB/sec vanilla i3 desktop, ~4.6GB/sec AWS microinstance).
 
 *What's the point of lumps of junk?*  
 Uses can be: file hashing, integrity tests, system stress testing, and network speed tests.
 
-A few Windows programs exist to create large files, and there are plenty of shell scripts using `dd` etc. I just needed something cross-platform with simple command-line options.
+A few Windows programs exist to create large files, and there are plenty of shell scripts using `dd`. I just needed something cross-platform with simple command-line options.
 
 
 ## OS Support
@@ -57,7 +57,14 @@ A few Windows programs exist to create large files, and there are plenty of shel
     rnd64 -f 100g | pv > /dev/null        stress your system
 
 
-###### WARNING. When using RND64 to generate large files (1GB+): for HDDs consider the mechanical drive's age and performance; for SSDs consider the potential write wear. As well as warming the CPU, RND64 is quite capable of exhausting all drive space, finishing off failing HDDs, and reducing SSD lifetimes.
+### Warning
+
+When using RND64 to generate large files (1GB+):
+
++ HDDs: consider the mechanical drive's age and performance,
++ SSDs: consider the potential write wear.
+
+As well as warming the CPU, RND64 is quite capable of exhausting all drive space, finishing off failing HDDs, and reducing SSD lifetimes.
 
 
 ## Executables
