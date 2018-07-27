@@ -79,7 +79,7 @@ Download from [Releases](https://github.com/Tinram/RND64/releases/latest) or dir
 
     git clone https://github.com/Tinram/RND64
 
-    cd RND64
+    cd RND64/src
 
 ### Linux
 
