@@ -57,7 +57,7 @@ A few Windows programs exist to create large files, and there are plenty of shel
     rnd64 -f 100g | pv > /dev/null        stress your system
 
 
-### Warning
+### Warning!
 
 When using RND64 to generate large files (1GB+):
 
@@ -77,9 +77,9 @@ Download from [Releases](https://github.com/Tinram/RND64/releases/latest) or dir
 
 ## Build
 
-In the local directory containing the cloned repo / extracted zip files, compile with GCC:
+    git clone https://github.com/Tinram/RND64
 
-(or for Clang, just rename the makefiles)
+    cd RND64
 
 ### Linux
 
@@ -89,7 +89,9 @@ or full process:
 
     make && make install && make clean
 
-compile manually:
+(Default compiler is GCC; for Clang, just rename the makefiles.)
+
+Compile manually:
 
 **GCC:**
 
@@ -106,7 +108,7 @@ compile manually:
 #### Further Optimisation
 
     -mtune=native -march=native                    current CPU
-    -flto
+    -flto                                          linker optimize
 
     -march=core-avx2 -mtune=core-avx2              Intel Haswell
     -march=skylake-avx512 -mtune=skylake-avx512    Intel Skylake
@@ -122,7 +124,7 @@ On both Linux and Windows, it's more convenient for RND64 to be available from a
 
     make install
 
-Or move the RND64 executable to a location such as */usr/local/bin*  (location must be present in *$PATH*).
+Or move the RND64 executable to a location such as */usr/local/bin* (location must be present in *$PATH*).
 
 #### Windows
 
