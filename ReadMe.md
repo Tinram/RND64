@@ -14,7 +14,7 @@
 
 ## Purpose
 
-Generate large files (4GB+, non-sparse) and large streams of random/fixed character data (200GB+) at fast generation rates (zero stream output on Linux: ~8.5GB/sec vanilla i3 desktop, ~4.6GB/sec AWS microinstance).
+Generate large files (4GB+, non-sparse) and large streams of binary/character data (200GB+) at fast generation rates (zero stream output on Linux: ~8.5GB/sec vanilla i3 desktop, ~4.6GB/sec AWS microinstance).
 
 *What's the point of lumps of junk?*  
 Uses can be: file hashing, integrity tests, system stress testing, and network speed tests.
@@ -35,7 +35,7 @@ A few Windows programs exist to create large files, and there are plenty of shel
 
 #### Options
 
-    -a     (all)             binary characters          includes control codes
+    -a     (all)             binary bytes               includes control codes
     -f     (fastest)         character zero (48)        fastest generator
     -r     (restrict)        characters 33 to 126       7-bit printable ASCII, safe for terminal output
     -c     (crypto)          crypto-sourced bytes       Linux: /dev/urandom, Windows: CryptGenRandom (slow)
@@ -48,13 +48,13 @@ A few Windows programs exist to create large files, and there are plenty of shel
     rnd64.exe or rnd64   (Windows)        display command-line options, as above
     ./rnd64              (Linux)
 
-    rnd64 -a 1k f.txt                     output 1kB of random bytes to the file 'f.txt'
+    rnd64 -a 1k f.txt                     output 1kB of random binary bytes to the file 'f.txt'
     rnd64 -f 1k f.txt                     output 1kB of zeros to 'f.txt'
-    rnd64 -r 1k f.txt                     output a restricted range of 7-bit ASCII characters (33 to 126) to 'f.txt'
+    rnd64 -r 1k f.txt                     output the restricted range of 7-bit ASCII characters (33 to 126) to 'f.txt'
     rnd64 -f 4g | pv > /dev/null          send 4GB of zeros to /dev/null with 'pv' displaying the throughput rate (Linux)
     rnd64 -c 1k | ent                     pipe 1kB of crypto bytes to the program 'ent'
     rnd64 -a 1k | nc 192.168.1.20 80      pipe 1kB of random bytes to 'netcat' to send to 192.168.1.20 on port 80
-    rnd64 -f 100g | pv > /dev/null        stress your system
+    rnd64 -f 100g | pv > /dev/null        stress a system
 
 
 ### Warning!
