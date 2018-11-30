@@ -14,7 +14,7 @@
 
 ## Purpose
 
-Generate large files (4GB+, non-sparse) and large streams of binary/character data (200GB+) at fast generation rates (zero stream output on Linux: ~8.5GB/sec vanilla i3 desktop, ~4.6GB/sec AWS microinstance).
+Generate large files (over 4GB, non-sparse) and large streams of binary/character data (200GB+) at fast generation rates (~8.5GB/sec i3 desktop, ~4.6GB/sec AWS microinstance; zero stream output on Linux).
 
 *What's the point of lumps of junk?*  
 Uses can be: file hashing, integrity tests, system stress testing, and network speed tests.
@@ -48,18 +48,21 @@ A few Windows programs exist to create large files, and there are plenty of shel
     rnd64.exe or rnd64   (Windows)        display command-line options, as above
     ./rnd64              (Linux)
 
-    rnd64 -a 1k f.txt                     output 1kB of random binary bytes to the file 'f.txt'
-    rnd64 -f 1k f.txt                     output 1kB of zeros to 'f.txt'
-    rnd64 -r 1k f.txt                     output the restricted range of 7-bit ASCII characters (33 to 126) to 'f.txt'
-    rnd64 -f 4g | pv > /dev/null          send 4GB of zeros to /dev/null with 'pv' displaying the throughput rate (Linux)
-    rnd64 -c 1k | ent                     pipe 1kB of crypto bytes to the program 'ent'
-    rnd64 -a 1k | nc 192.168.1.20 80      pipe 1kB of random bytes to 'netcat' to send to 192.168.1.20 on port 80
-    rnd64 -f 100g | pv > /dev/null        stress a system
+    rnd64 -a 1k f.txt                          output 1kB of random binary bytes to the file 'f.txt'
+    rnd64 -f 1k f.txt                          output 1kB of zeros to 'f.txt'
+    rnd64 -r 1k f.txt                          output the restricted range of 7-bit ASCII characters (33 to 126) to 'f.txt'
+    rnd64 -f 4g | pv > /dev/null               send 4GB of zeros to /dev/null with 'pv' displaying the throughput rate (Linux)
+    rnd64 -c 1k | ent                          pipe 1kB of crypto bytes to the program 'ent'
+    rnd64 -a 1k | nc 192.168.1.20 80           pipe 1kB of random bytes to 'netcat' to send to 192.168.1.20 on port 80
+    rnd64 -f 100g | pv > /dev/null             stress a system
+
+    nc -lk -p 3000 > /dev/null                 local network speed test (machine receiving, 192.168.1.20)
+    rnd64 -f 1g | pv | nc 192.168.1.20 3000    (machine sending)
 
 
 ### Warning!
 
-When using RND64 to generate large files (1GB+):
+When using RND64 to generate large files (over 1GB):
 
 + HDDs: consider the mechanical drive's age and performance,
 + SSDs: consider the potential write wear.
@@ -77,7 +80,7 @@ Download from [Releases](https://github.com/Tinram/RND64/releases/latest) or dir
 
 ## Build
 
-    git clone https://github.com/Tinram/RND64
+    git clone https://github.com/Tinram/RND64.git
 
     cd RND64/src
 
