@@ -1,7 +1,7 @@
 
 # RND64
 
-### Fast multi-threaded 64-bit data generator for benchmarks and stress tests.
+### Fast multi-threaded 64-bit data generator for junk files, benchmarks, and stress tests.
 
 #### Linux and Windows
 
@@ -30,8 +30,10 @@ A few Windows programs exist to create large files, and there are plenty of shel
 
 ## Usage
 
+```bash
     rnd64 [option] <size> <file>
     rnd64 [option] <size> | <program>
+```
 
 #### Options
 
@@ -80,17 +82,22 @@ Download from [Releases](https://github.com/Tinram/RND64/releases/latest) or dir
 
 ## Build
 
+```bash
     git clone https://github.com/Tinram/RND64.git
-
     cd RND64/src
+```
 
 ### Linux
 
+```bash
     make
+```
 
 or full process:
 
+```bash
     make && make install && make clean
+```
 
 (Default compiler is GCC; for Clang, just rename the makefiles.)
 
@@ -98,15 +105,21 @@ Compile manually:
 
 **GCC:**
 
+```bash
     gcc rnd64.c -o rnd64 -lpthread -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -std=gnu99 -s
+```
 
 **Clang:**
 
+```bash
     clang rnd64.c -o rnd64 -lpthread -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -s
+```
 
 ### Windows
 
+```bash
     gcc rnd64.c -o rnd64.exe -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -std=c99 -s
+```
 
 #### Further Optimisation
 
@@ -125,7 +138,9 @@ On both Linux and Windows, it's more convenient for RND64 to be available from a
 
 #### Linux
 
+```bash
     make install
+```
 
 Or move the RND64 executable to a location such as */usr/local/bin* (location must be present in *$PATH*).
 
@@ -138,18 +153,26 @@ Or move the RND64 executable to a location such as */usr/local/bin* (location mu
 
 **RND64 is fast:**
 
+```bash
     martin@xyz ~ $ rnd64 -f 4g | pv > /dev/null
-    4GiB 0:00:00 [8.51GiB/s] [  <=>  ]
+```
+        4GiB 0:00:00 [8.51GiB/s] [  <=>  ]
+
 
 &nbsp;&nbsp;(i3-4170 CPU 3.70GHz, 4.4 kernel)
 
+```bash
     martin@xyz ~ $ dd if=/dev/zero of=/dev/null bs=4G count=1 iflag=fullblock
-    4294967296 bytes (4.3 GB, 4.0 GiB) copied, 0.959431 s, 4.5 GB/s
+```
+        4294967296 bytes (4.3 GB, 4.0 GiB) copied, 0.959431 s, 4.5 GB/s
 
 &nbsp;&nbsp;(`dd` on the same machine)
 
+```bash
     [ec2-user@ip-172-31-7-109 ~]$ rnd64 -f 4g | pv > /dev/null
-    4GiB 0:00:00 [4.61GiB/s] [     <=>     ]
+```
+        4GiB 0:00:00 [4.61GiB/s] [     <=>     ]
+
 
 &nbsp;&nbsp;(AWS Xeon E5-2670 2.50GHz, single core)
 
