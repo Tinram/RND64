@@ -19,7 +19,8 @@ Generate large files (over 4GB, non-sparse) and large streams of binary/characte
 *What's the point of lumps of junk?*  
 Uses can be: file hashing, integrity tests, system stress testing, and network speed tests.
 
-A few Windows programs exist to create large files, and there are plenty of shell scripts using `dd`. I just needed something cross-platform with simple command-line options.
+A few Windows programs exist to create large files, and there are plenty of shell scripts using `dd`.  
+I just needed something cross-platform with simple command-line options.
 
 
 ## OS Support
@@ -99,7 +100,7 @@ or full process:
     make && make install && make clean
 ```
 
-(Default compiler is GCC; for Clang, just rename the makefiles.)
+(Default compiler is GCC. For Clang, just rename the makefiles.)
 
 Compile manually:
 
@@ -191,9 +192,9 @@ Multi-threading has its own speed impacts, such as thread-waiting and data strea
 
 ## Credits
 
-+ Professor Melissa E. O'Neill: creator of the fast [PCG](http://www.pcg-random.org/) RNG.
-+ Damir Cohadarevic: inspiration, highlighting PCG.
-+ Aleksandr Sergeev: testing, recommendations.
++ [Professor Melissa E. O'Neill](https://www.cs.hmc.edu/~oneill/index.html): creator of the fast [PCG](http://www.pcg-random.org/) RNG.
++ [Damir Cohadarevic](https://github.com/cohadar): inspiration, highlighting PCG.
++ [Aleksandr Sergeev](https://github.com/sergeevabc): testing, recommendations.
 + MSDN: Windows crypto.
 + Ben Alpert: microsecond timer.
 
