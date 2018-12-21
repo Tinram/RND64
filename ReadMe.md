@@ -152,6 +152,8 @@ Or move the RND64 executable to a location such as */usr/local/bin* (location mu
 
 ## Speed
 
+### Linux
+
 **RND64 is fast:**
 
 ```bash
@@ -188,6 +190,27 @@ In the code, there are faster ways to create files than using C's `fwrite()`, wh
 On Linux, `write()` can be up to 4 times faster than `fwrite()` on some machines (using a single-threaded version of RND64, with file descriptor unclosed).  However, `write()` will only transfer a maximum of 2.1GB, even on 64-bit systems [[write(2)](http://man7.org/linux/man-pages/man2/write.2.html)]. `fwrite()` does not have this limitation, and 4GB+ output is what I sought.
 
 Multi-threading has its own speed impacts, such as thread-waiting and data streams being combined.
+
+### Windows
+
+With Windows lacking `pv`, stream output speed is somewhat more difficult to assess.
+
+One way is to provide the stats output on *stderr*.  
+This can be enabled by setting a flag in the source.
+
+In *rnd64.h*, set the following macro value to 1:
+
+```c
+    #define STREAM_STATS 0 /* Win stream stats */
+```
+
+then compile the source as in the *Build > Windows* section.
+
+```bash
+    C:\rnd64.exe -f 4g > nul
+```
+        time: 9 s 938 ms
+        MB/s: 412.15
 
 
 ## Credits
