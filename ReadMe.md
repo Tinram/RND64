@@ -19,7 +19,7 @@ Generate large files (over 4GB, non-sparse) and large streams of binary/characte
 *What's the point of lumps of junk?*  
 Uses can be: file hashing, integrity tests, system stress testing, and network speed tests.
 
-A few Windows programs exist to create large files, and there are plenty of shell scripts using `dd`.  
+A few Windows programs exist to create large files, and there are plenty of shell scripts using `dd`  
 I just needed something cross-platform with simple command-line options.
 
 
@@ -100,9 +100,11 @@ or full process:
     make && make install && make clean
 ```
 
-(Default compiler is GCC. For Clang, just rename the makefiles.)
+(Default compiler is GCC. For Clang, just rename the *makefiles*.)
 
-Compile manually:
+----
+
+#### Manual compilation:
 
 **GCC:**
 
@@ -116,19 +118,21 @@ Compile manually:
     clang rnd64.c -o rnd64 -lpthread -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -s
 ```
 
-### Windows
-
-```bash
-    gcc rnd64.c -o rnd64.exe -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -std=c99 -s
-```
-
-#### Further Optimisation
+##### Further Optimisation
 
     -mtune=native -march=native                    current CPU
     -flto                                          linker optimize
 
     -march=core-avx2 -mtune=core-avx2              Intel Haswell
     -march=skylake-avx512 -mtune=skylake-avx512    Intel Skylake
+
+----
+
+### Windows
+
+```bash
+    gcc rnd64.c -o rnd64.exe -O3 -Wall -Wextra -Wuninitialized -Wunused -Werror -std=c99 -s
+```
 
 
 ## Other
