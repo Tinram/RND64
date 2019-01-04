@@ -5,7 +5,7 @@
 
 #### Linux and Windows
 
-##### RND64 v.0.40
+##### RND64 v.0.41
 
 
 [1]: https://tinram.github.io/images/rnd64.png
@@ -14,7 +14,7 @@
 
 ## Purpose
 
-Generate large files (over 4GB, non-sparse) and large streams of binary/character data (200GB+) at fast generation rates (~8.5GB/sec i3 desktop, ~4.6GB/sec AWS microinstance; zero stream output on Linux).
+Generate large files (over 4GB, non-sparse) and large streams of binary/character data (200GB+) at fast generation rates (~8.5GB/sec i3 desktop, ~4.6GB/sec AWS microinstance; null byte stream output on Linux).
 
 *What's the point of lumps of junk?*  
 Uses can be: file hashing, integrity tests, system stress testing, and network speed tests.
@@ -39,7 +39,7 @@ I just needed something cross-platform with simple command-line options.
 #### Options
 
     -a     (all)             binary bytes               includes control codes
-    -f     (fastest)         character zero (48)        fastest generator
+    -f     (fastest)         null character (0)         fastest generator
     -r     (restrict)        characters 33 to 126       7-bit printable ASCII, safe for terminal output
     -c     (crypto)          crypto-sourced bytes       Linux: /dev/urandom, Windows: CryptGenRandom (slow)
 
@@ -52,9 +52,9 @@ I just needed something cross-platform with simple command-line options.
     ./rnd64              (Linux)
 
     rnd64 -a 1k f.txt                          output 1kB of random binary bytes to the file 'f.txt'
-    rnd64 -f 1k f.txt                          output 1kB of zeros to 'f.txt'
+    rnd64 -f 1k f.txt                          output 1kB of null bytes to 'f.txt'
     rnd64 -r 1k f.txt                          output the restricted range of 7-bit ASCII characters (33 to 126) to 'f.txt'
-    rnd64 -f 4g | pv > /dev/null               send 4GB of zeros to /dev/null with 'pv' displaying the throughput rate (Linux)
+    rnd64 -f 4g | pv > /dev/null               send 4GB of null bytes to /dev/null with 'pv' displaying the throughput rate (Linux)
     rnd64 -c 1k | ent                          pipe 1kB of crypto bytes to the program 'ent'
     rnd64 -a 1k | nc 192.168.1.20 80           pipe 1kB of random bytes to 'netcat' to send to 192.168.1.20 on port 80
     rnd64 -f 100g | pv > /dev/null             stress a system
@@ -183,7 +183,7 @@ Or move the RND64 executable to a location such as */usr/local/bin* (location mu
 
 &nbsp;&nbsp;(AWS Xeon E5-2670 2.50GHz, single core)
 
-+ Zero stream generation rates `-f` are decent on Linux (~8GB/sec on vanilla i3-4170), and the [PCG](http://www.pcg-random.org/) random number generator `-a` is pretty fast (~4GB/sec on same CPU) compared to most other RNGs.
++ Null byte stream generation rates `-f` are decent on Linux (~8GB/sec on vanilla i3-4170), and the [PCG](http://www.pcg-random.org/) random number generator `-a` is pretty fast (~4GB/sec on same CPU) compared to most other RNGs.
 
 **... but not that fast:**
 
