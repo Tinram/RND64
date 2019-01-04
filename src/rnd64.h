@@ -7,7 +7,7 @@
 	*
 	* @author        Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
-	* @version       0.40 mt
+	* @version       0.41 mt
 	* @license       GNU GPL version 3.0 (GPL v3); http://www.gnu.org/licenses/gpl.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
@@ -33,7 +33,7 @@
 
 
 /* defines */
-#define RND64_VERSION "0.40 mt"
+#define RND64_VERSION "0.41 mt"
 #define KB 0x400ULL
 #define STREAM_STATS 0 /* Win stream stats */
 
@@ -41,6 +41,7 @@
 /* constants */
 float const cMBRECIP = 0.000976562;
 unsigned int const cBUFFER = 64 * KB; /* optimum 64kB cache size (~L1) on CPUs tested */
+unsigned int const cNB = 0;
 
 
 /* structs */

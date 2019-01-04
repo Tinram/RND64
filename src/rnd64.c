@@ -7,7 +7,7 @@
 	*
 	* @author        Martin Latter <copysense.co.uk>
 	* @copyright     Martin Latter, April 2014
-	* @version       0.40 mt
+	* @version       0.41 mt
 	* @license       GNU GPL version 3.0 (GPL v3); https://www.gnu.org/licenses/gpl-3.0.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
@@ -456,7 +456,7 @@ inline uint32_t pcg32_random_r(pcg32_random_t* rng)
 
 
 /**
-	* Thread function: output zero character.
+	* Thread function: output null character.
 	*
 	* @param   void pointer st, params struct
 	* @return  void* / null
@@ -475,29 +475,29 @@ inline uint32_t pcg32_random_r(pcg32_random_t* rng)
 		unsigned int iNumPages = iThreadBytes / cBUFFER;
 		unsigned int iNumBytes = cBUFFER / sizeof(unsigned int);
 		unsigned int iTailSize = iThreadBytes % cBUFFER;
-		unsigned int aBuffer[cBUFFER]; /* slightly faster (just) using array on stack than heap (malloc); int_fast8_t tried */
+		unsigned int aBuffer[cBUFFER]; /* slightly faster (just) in using array on stack rather than heap (malloc); int_fast8_t tried */
 
 		if (params->filename != NULL) { /* write to file */
 
 			for (unsigned int i = 0; i < iNumPages; i++) {
-				memset(aBuffer, 48, iNumBytes);
+				memset(aBuffer, cNB, iNumBytes);
 				fwrite(aBuffer, 1, cBUFFER, pFile);
 			}
 
 			if (iTailSize > 0) {
-				memset(aBuffer, 48, iNumBytes);
+				memset(aBuffer, cNB, iNumBytes);
 				fwrite(aBuffer, 1, iTailSize, pFile);
 			}
 		}
 		else { /* write to stdout */
 
 			for (unsigned int i = 0; i < iNumPages; i++) {
-				memset(aBuffer, 48, iNumBytes);
+				memset(aBuffer, cNB, iNumBytes);
 				fwrite(aBuffer, 1, cBUFFER, stdout);
 			}
 
 			if (iTailSize > 0) {
-				memset(aBuffer, 48, iNumBytes);
+				memset(aBuffer, cNB, iNumBytes);
 				fwrite(aBuffer, 1, iTailSize, stdout);
 			}
 		}
