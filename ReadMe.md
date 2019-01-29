@@ -160,28 +160,20 @@ Or move the RND64 executable to a location such as */usr/local/bin* (location mu
 
 **RND64 is fast:**
 
-```bash
-    martin@xyz ~ $ rnd64 -f 4g | pv > /dev/null
-```
+*i3-4170 CPU 3.70GHz, 4.4 kernel*:
+
+        martin@xyz ~ $ rnd64 -f 4g | pv > /dev/null
         4GiB 0:00:00 [8.51GiB/s] [  <=>  ]
 
+`dd` on same machine:
 
-&nbsp;&nbsp;(i3-4170 CPU 3.70GHz, 4.4 kernel)
-
-```bash
-    martin@xyz ~ $ dd if=/dev/zero of=/dev/null bs=4G count=1 iflag=fullblock
-```
+        martin@xyz ~ $ dd if=/dev/zero of=/dev/null bs=4G count=1 iflag=fullblock
         4294967296 bytes (4.3 GB, 4.0 GiB) copied, 0.959431 s, 4.5 GB/s
 
-&nbsp;&nbsp;(`dd` on the same machine)
+*AWS Xeon E5-2670 2.50GHz, single core*:
 
-```bash
-    [ec2-user@ip-172-31-7-109 ~]$ rnd64 -f 4g | pv > /dev/null
-```
+        [ec2-user@ip-172-31-7-109 ~]$ rnd64 -f 4g | pv > /dev/null
         4GiB 0:00:00 [4.61GiB/s] [     <=>     ]
-
-
-&nbsp;&nbsp;(AWS Xeon E5-2670 2.50GHz, single core)
 
 + Null byte stream generation rates `-f` are decent on Linux (~8GB/sec on vanilla i3-4170), and the [PCG](http://www.pcg-random.org/) random number generator `-a` is pretty fast (~4GB/sec on same CPU) compared to most other RNGs.
 
@@ -210,9 +202,7 @@ In *rnd64.h*, set the following macro value to 1:
 
 then compile the source as in the *Build > Windows* section.
 
-```bash
-    C:\rnd64.exe -f 4g > nul
-```
+        C:\rnd64.exe -f 4g > nul
         time: 9 s 938 ms
         MB/s: 412.15
 
@@ -221,7 +211,7 @@ then compile the source as in the *Build > Windows* section.
 
 + [Professor Melissa E. O'Neill](https://www.cs.hmc.edu/~oneill/index.html): creator of the fast [PCG](http://www.pcg-random.org/) RNG.
 + [Damir Cohadarevic](https://github.com/cohadar): inspiration, highlighting PCG.
-+ [Aleksandr Sergeev](https://github.com/sergeevabc): testing, recommendations.
++ [Aleksandr Sergeev](https://github.com/sergeevabc): thorough testing, recommendations.
 + MSDN: Windows crypto.
 + Ben Alpert: microsecond timer.
 
