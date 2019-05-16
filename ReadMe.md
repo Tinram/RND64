@@ -187,6 +187,11 @@ On Linux, `write()` can be up to 4 times faster than `fwrite()` on some machines
 
 Multi-threading has its own speed impacts, such as thread-waiting and data streams being combined.
 
+**... and seems to be 'slowing down':**
+
+... apparently on my i3-4170, courtesy of the Spectre/Meltdown kernel patches.
+
+
 ### Windows
 
 With Windows lacking `pv`, stream output speed is somewhat more difficult to assess.
