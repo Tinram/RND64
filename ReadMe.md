@@ -1,7 +1,7 @@
 
 # RND64
 
-### Fast multi-threaded 64-bit data generator for junk files, benchmarks, and stress tests.
+### Fast multi-threaded 64-bit file/stream junk data generator.
 
 #### Linux and Windows
 
@@ -17,7 +17,7 @@
 Generate large files (over 4GB, non-sparse) and large streams of binary/character data (200GB+) at fast generation rates (~8.5GB/sec i3 desktop, ~4.6GB/sec AWS microinstance; null byte stream output on Linux).
 
 *What's the point of lumps of junk?*  
-Uses can be: file hashing, integrity tests, system stress testing, and network speed tests.
+Uses can be: test files, file hashing, integrity tests, system stress testing, and network speed tests.
 
 A few Windows programs exist to create large files, and there are plenty of shell scripts using `dd`  
 I just needed something cross-platform with simple command-line options.
@@ -194,7 +194,7 @@ Multi-threading has its own speed impacts, such as thread-waiting and data strea
 
 ### Windows
 
-With Windows lacking `pv`, stream output speed is somewhat more difficult to assess.
+With Windows lacking `pv` or equivalent, stream output speed is somewhat more difficult to assess.
 
 One way is to provide the stats output on *stderr*.  
 This can be enabled by setting a flag in the source.
