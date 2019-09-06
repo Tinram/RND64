@@ -11,22 +11,17 @@
 [1]: https://tinram.github.io/images/rnd64.png
 ![rnd64][1]
 
-<pre>
 
+&nbsp;  
 
-</pre>
+[**Purpose**](#purpose)  
+[**Usage**](#usage)  
+[**Downloads**](#downloads)  
+[**Speed**](#speed)  
+[**Build**](#build)
 
+&nbsp;  
 
-### [Purpose](#purpose)
-### [Usage](#usage)
-### [Downloads](#downloads)
-### [Speed](#speed)
-### [Build](#build)
-
-
-<pre>
-
-</pre>
 
 ## Purpose <a id="purpose"></a>
 
