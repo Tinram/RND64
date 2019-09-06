@@ -5,14 +5,30 @@
 
 #### Linux and Windows
 
-##### RND64 v.0.41
+##### v.0.41
 
 
 [1]: https://tinram.github.io/images/rnd64.png
 ![rnd64][1]
 
+<pre>
 
-## Purpose
+
+</pre>
+
+
+### [Purpose](#purpose)
+### [Usage](#usage)
+### [Downloads](#downloads)
+### [Speed](#speed)
+### [Build](#build)
+
+
+<pre>
+
+</pre>
+
+## Purpose <a id="purpose"></a>
 
 Generate large files (over 4GB, non-sparse) and large streams of binary/character data (200GB+) at fast generation rates (~8.5GB/sec i3 desktop, ~4.6GB/sec AWS microinstance; null byte stream output on Linux).
 
@@ -29,7 +45,7 @@ I just needed something cross-platform with simple command-line options.
 + Windows x64
 
 
-## Usage
+## Usage <a id="usage"></a>
 
 ```bash
     rnd64 [option] <size> <file>
@@ -48,7 +64,7 @@ I just needed something cross-platform with simple command-line options.
 
 ### Usage Examples
 
-    rnd64.exe or rnd64   (Windows)        display command-line options, as above
+    rnd64.exe or rnd64   (Windows)             display command-line options, as above
     ./rnd64              (Linux)
 
     rnd64 -a 1k f.txt                          output 1kB of random binary bytes to the file 'f.txt'
@@ -73,15 +89,74 @@ When using RND64 to generate large files (over 1GB):
 As well as warming the CPU, RND64 is quite capable of exhausting all drive space, finishing off failing HDDs, and reducing SSD lifetimes.
 
 
-## Executables
+## Downloads <a id="downloads"></a>
 
-Download from [Releases](https://github.com/Tinram/RND64/releases/latest) or directly:
+Download from [Releases](https://github.com/Tinram/RND64/releases/latest)  
+or directly:
 
 + Linux: [rnd64](https://github.com/Tinram/RND64/raw/master/bin/rnd64)
 + Windows: [rnd64.exe](https://github.com/Tinram/RND64/raw/master/bin/rnd64.exe)
 
 
-## Build
+## Speed <a id="speed"></a>
+
+### Linux
+
+**RND64 is fast:**
+
+*i3-4170 CPU 3.70GHz, 4.4 kernel*:
+
+        martin@xyz ~ $ rnd64 -f 4g | pv > /dev/null
+        4GiB 0:00:00 [8.51GiB/s] [  <=>  ]
+
+`dd` on same machine:
+
+        martin@xyz ~ $ dd if=/dev/zero of=/dev/null bs=4G count=1 iflag=fullblock
+        4294967296 bytes (4.3 GB, 4.0 GiB) copied, 0.959431 s, 4.5 GB/s
+
+*AWS Xeon E5-2670 2.50GHz, single core*:
+
+        [ec2-user@ip-172-31-7-109 ~]$ rnd64 -f 4g | pv > /dev/null
+        4GiB 0:00:00 [4.61GiB/s] [     <=>     ]
+
++ Null byte stream generation rates `-f` are decent on Linux (~8GB/sec on vanilla i3-4170), and the [PCG](http://www.pcg-random.org/) random number generator `-a` is pretty fast (~4GB/sec on same CPU) compared to most other RNGs.
+
+**... but not that fast:**
+
++ File generation rates are slower and subject to a multitude of factors including: OS, OS activity, kernel version, kernel patches, HDD versus SSD drive, SSD interface and underlying SSD technology etc.
+
+In the code, there are faster ways to create files than using C's `fwrite()`, which RND64 uses.
+
+On Linux, `write()` can be up to 4 times faster than `fwrite()` on some machines (using a single-threaded version of RND64, with file descriptor unclosed).  However, `write()` will only transfer a maximum of 2.1GB, even on 64-bit systems [[write(2)](http://man7.org/linux/man-pages/man2/write.2.html)]. `fwrite()` does not have this limitation, and 4GB+ output is what I sought.
+
+Multi-threading has its own speed impacts, such as thread-waiting and data streams being combined.
+
+**... and seems to be 'slowing down':**
+
+... apparently on my i3-4170, courtesy of the Spectre/Meltdown kernel patches.
+
+
+### Windows
+
+With Windows lacking `pv` or equivalent, stream output speed is somewhat more difficult to assess.
+
+One way is to provide the stats output on *stderr*.  
+This can be enabled by setting a flag in the source.
+
+In *rnd64.h*, set the following macro value to 1:
+
+```c
+    #define STREAM_STATS 0 /* Win stream stats */
+```
+
+then compile the source as in the *Build > Windows* section.
+
+        C:\rnd64.exe -f 4g > nul
+        time: 9 s 938 ms
+        MB/s: 412.15
+
+
+## Build <a id="build"></a>
 
 ```bash
     git clone https://github.com/Tinram/RND64.git
@@ -152,64 +227,6 @@ Or move the RND64 executable to a location such as */usr/local/bin* (location mu
 #### Windows
 
 [Windows/Super key + Break] > Advanced tab > Environmental Variables button > click Path line > Edit button > Variable value &ndash; append at the end of existing line information: *C:\directory\path\to\rnd64.exe\;*
-
-
-## Speed
-
-### Linux
-
-**RND64 is fast:**
-
-*i3-4170 CPU 3.70GHz, 4.4 kernel*:
-
-        martin@xyz ~ $ rnd64 -f 4g | pv > /dev/null
-        4GiB 0:00:00 [8.51GiB/s] [  <=>  ]
-
-`dd` on same machine:
-
-        martin@xyz ~ $ dd if=/dev/zero of=/dev/null bs=4G count=1 iflag=fullblock
-        4294967296 bytes (4.3 GB, 4.0 GiB) copied, 0.959431 s, 4.5 GB/s
-
-*AWS Xeon E5-2670 2.50GHz, single core*:
-
-        [ec2-user@ip-172-31-7-109 ~]$ rnd64 -f 4g | pv > /dev/null
-        4GiB 0:00:00 [4.61GiB/s] [     <=>     ]
-
-+ Null byte stream generation rates `-f` are decent on Linux (~8GB/sec on vanilla i3-4170), and the [PCG](http://www.pcg-random.org/) random number generator `-a` is pretty fast (~4GB/sec on same CPU) compared to most other RNGs.
-
-**... but not that fast:**
-
-+ File generation rates are slower and subject to a multitude of factors including: OS, OS activity, kernel version, kernel patches, HDD versus SSD drive, SSD interface and underlying SSD technology etc.
-
-In the code, there are faster ways to create files than using C's `fwrite()`, which RND64 uses.
-
-On Linux, `write()` can be up to 4 times faster than `fwrite()` on some machines (using a single-threaded version of RND64, with file descriptor unclosed).  However, `write()` will only transfer a maximum of 2.1GB, even on 64-bit systems [[write(2)](http://man7.org/linux/man-pages/man2/write.2.html)]. `fwrite()` does not have this limitation, and 4GB+ output is what I sought.
-
-Multi-threading has its own speed impacts, such as thread-waiting and data streams being combined.
-
-**... and seems to be 'slowing down':**
-
-... apparently on my i3-4170, courtesy of the Spectre/Meltdown kernel patches.
-
-
-### Windows
-
-With Windows lacking `pv` or equivalent, stream output speed is somewhat more difficult to assess.
-
-One way is to provide the stats output on *stderr*.  
-This can be enabled by setting a flag in the source.
-
-In *rnd64.h*, set the following macro value to 1:
-
-```c
-    #define STREAM_STATS 0 /* Win stream stats */
-```
-
-then compile the source as in the *Build > Windows* section.
-
-        C:\rnd64.exe -f 4g > nul
-        time: 9 s 938 ms
-        MB/s: 412.15
 
 
 ## Credits
