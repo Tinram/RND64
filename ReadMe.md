@@ -224,6 +224,15 @@ Or move the RND64 executable to a location such as */usr/local/bin* (location mu
 [Windows/Super key + Break] > Advanced tab > Environmental Variables button > click Path line > Edit button > Variable value &ndash; append at the end of existing line information: *C:\directory\path\to\rnd64.exe\;*
 
 
+## Testing
+
++ Bfbtester
++ CppCheck
++ Fuzz
++ Valgrind
++ dev/null_detect.c
+
+
 ## Credits
 
 + [Professor Melissa E. O'Neill](https://www.cs.hmc.edu/~oneill/index.html): creator of the fast [PCG](http://www.pcg-random.org/) RNG.
