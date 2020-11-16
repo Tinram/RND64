@@ -1,7 +1,7 @@
 
 # RND64
 
-### Fast multi-threaded 64-bit file/stream junk data generator.
+### Fast multi-threaded file/stream junk data generator.
 
 #### Linux and Windows
 
@@ -27,8 +27,8 @@
 
 Generate large files (over 4GB, non-sparse) and large streams of binary/character data (200GB+) at fast generation rates (~8.5GB/sec i3 desktop, ~4.6GB/sec AWS microinstance; null byte stream output on Linux).
 
-*What's the point of lumps of junk?*  
-Uses can be: test files, file hashing, integrity tests, system stress testing, and network speed tests.
+*What's the point of such junk?*  
+Uses: test files, file hashing, integrity tests, system stress testing, and network speed tests.
 
 A few Windows programs exist to create large files, and there are plenty of shell scripts using `dd`  
 I just needed something cross-platform with simple command-line options.
@@ -126,7 +126,7 @@ On Linux, `write()` can be up to 4 times faster than `fwrite()` on some machines
 
 Multi-threading has its own speed impacts, such as thread-waiting and data streams being combined.
 
-**... and seems to be 'slowing down':**
+**... and output is 'slowing down':**
 
 ... apparently on my i3-4170, courtesy of the Spectre/Meltdown kernel patches.
 
@@ -144,7 +144,7 @@ In *rnd64.h*, set the following macro value to 1:
     #define STREAM_STATS 0 /* Win stream stats */
 ```
 
-then compile the source as in the *Build > Windows* section.
+Then compile the source as in the *Build > Windows* section.
 
         C:\rnd64.exe -f 4g > nul
         time: 9 s 938 ms
