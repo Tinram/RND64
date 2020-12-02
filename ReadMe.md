@@ -1,7 +1,7 @@
 
 # RND64
 
-### Fast multi-threaded file/stream junk data generator.
+### Fast multi-threaded file / stream junk data generator.
 
 #### Linux and Windows
 
@@ -25,13 +25,19 @@
 
 ## Purpose <a id="purpose"></a>
 
-Generate large files (over 4GB, non-sparse) and large streams of binary/character data (200GB+) at fast generation rates (~8.5GB/sec i3 desktop, ~4.6GB/sec AWS microinstance; null byte stream output on Linux).
+Generate large files (over 4 GB, non-sparse) or large streams of binary / character data (200 GB+) at fast generation rates  
+<small>(~8.5 GB/sec i3 desktop, ~4.6 GB/sec AWS microinstance using null byte stream output on Linux)</small>.
 
-*What's the point of such junk?*  
-Uses: test files, file hashing, integrity tests, system stress testing, and network speed tests.
+*And the point of junk data?*
+
+Uses:
+
++ test files for development, network transfer etc,
++ system stress testing,
++ network speed tests.
 
 A few Windows programs exist to create large files, and there are plenty of shell scripts using `dd`  
-I just needed something cross-platform with simple command-line options.
+Yet, I just needed something cross-platform with simple command-line options.
 
 
 ## OS Support
@@ -62,12 +68,12 @@ I just needed something cross-platform with simple command-line options.
     rnd64.exe or rnd64   (Windows)             display command-line options, as above
     ./rnd64              (Linux)
 
-    rnd64 -a 1k f.txt                          output 1kB of random binary bytes to the file 'f.txt'
-    rnd64 -f 1k f.txt                          output 1kB of null bytes to 'f.txt'
+    rnd64 -a 1k f.txt                          output 1 kB of random binary bytes to the file 'f.txt'
+    rnd64 -f 1k f.txt                          output 1 kB of null bytes to 'f.txt'
     rnd64 -r 1k f.txt                          output the restricted range of 7-bit ASCII characters (33 to 126) to 'f.txt'
-    rnd64 -f 4g | pv > /dev/null               send 4GB of null bytes to /dev/null with 'pv' displaying the throughput rate (Linux)
-    rnd64 -c 1k | ent                          pipe 1kB of crypto bytes to the program 'ent'
-    rnd64 -a 1k | nc 192.168.1.20 80           pipe 1kB of random bytes to 'netcat' to send to 192.168.1.20 on port 80
+    rnd64 -f 4g | pv > /dev/null               send 4 GB of null bytes to /dev/null with 'pv' displaying the throughput rate (Linux)
+    rnd64 -c 1k | ent                          pipe 1 kB of crypto bytes to the program 'ent'
+    rnd64 -a 1k | nc 192.168.1.20 80           pipe 1 kB of random bytes to 'netcat' to send to 192.168.1.20 on port 80
     rnd64 -f 100g | pv > /dev/null             stress a system
 
     nc -lk -p 3000 > /dev/null                 local network speed test (machine receiving, 192.168.1.20)
@@ -76,7 +82,7 @@ I just needed something cross-platform with simple command-line options.
 
 ### Warning!
 
-When using RND64 to generate large files (over 1GB):
+When using RND64 to generate large files (over 1 GB):
 
 + HDDs: consider the mechanical drive's age and performance,
 + SSDs: consider the potential write wear.
@@ -114,7 +120,7 @@ or directly:
         [ec2-user@ip-172-31-7-109 ~]$ rnd64 -f 4g | pv > /dev/null
         4GiB 0:00:00 [4.61GiB/s] [     <=>     ]
 
-+ Null byte stream generation rates `-f` are decent on Linux (~8GB/sec on vanilla i3-4170), and the [PCG](http://www.pcg-random.org/) random number generator `-a` is pretty fast (~4GB/sec on same CPU) compared to most other RNGs.
++ Null byte stream generation rates `-f` are decent on Linux (~8 GB/sec on vanilla i3-4170), and the [PCG](http://www.pcg-random.org/) random number generator (`-a` switch) is pretty fast (~4 GB/sec on same CPU) compared to most other RNGs.
 
 **... but not that fast:**
 
@@ -122,7 +128,7 @@ or directly:
 
 In the code, there are faster ways to create files than using C's `fwrite()`, which RND64 uses.
 
-On Linux, `write()` can be up to 4 times faster than `fwrite()` on some machines (using a single-threaded version of RND64, with file descriptor unclosed).  However, `write()` will only transfer a maximum of 2.1GB, even on 64-bit systems [[write(2)](http://man7.org/linux/man-pages/man2/write.2.html)]. `fwrite()` does not have this limitation, and 4GB+ output is what I sought.
+On Linux, `write()` can be up to 4 times faster than `fwrite()` on some machines (using a single-threaded version of RND64, with file descriptor unclosed).  However, `write()` will only transfer a maximum of 2.1 GB, even on 64-bit systems [[write(2)](http://man7.org/linux/man-pages/man2/write.2.html)]. `fwrite()` does not have this limitation, and 4 GB+ output is what I sought.
 
 Multi-threading has its own speed impacts, such as thread-waiting and data streams being combined.
 
