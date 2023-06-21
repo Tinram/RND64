@@ -2,7 +2,7 @@
 /**
 	* rnd64_st.c
 	*
-	* Version:       0.29 st
+	* Version:       0.30 st
 	* Version note:  Experimental, Linux-only, single-threaded version using write() to bypass OS buffers. 2.1GB max data dump.
 	* License:       GNU GPL version 3.0 (GPL v3); http://www.gnu.org/licenses/gpl.html
 	* Purpose:       Large file dump.
@@ -27,7 +27,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-#define RND64_VERSION "0.29 st"
+#define RND64_VERSION "0.30 st"
 #define RANDOM_PATH "/dev/urandom"
 
 
@@ -236,8 +236,8 @@ int main(int iArgCount, char* aArgV[]) {
 
 void menu(char* pFilename) {
 
-	printf("\nRND64 v.%s\ncopysense.co.uk", RND64_VERSION);
-	printf("\n\nUsage:\n");
+	printf("\nRND64 v.%s\n", RND64_VERSION);
+	printf("\nUsage:\n");
 	printf("\t\t%s [option] <size> [file]", pFilename);
 	printf("\n\t\t%s [option] <size> | <prog>", pFilename);
 	printf("\n\nOptions:");

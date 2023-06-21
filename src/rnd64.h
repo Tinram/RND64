@@ -5,7 +5,7 @@
 	*
 	* Generate large files (4GB+, non-sparse) and large streams (200GB+) of random data as quickly as possible.
 	*
-	* @author        Martin Latter <copysense.co.uk>
+	* @author        Martin Latter
 	* @copyright     Martin Latter, April 2014
 	* @version       0.41 mt
 	* @license       GNU GPL version 3.0 (GPL v3); http://www.gnu.org/licenses/gpl.html
