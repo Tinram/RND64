@@ -28,7 +28,7 @@
 Generate large files (over 4 GB, non-sparse) or large streams of binary / character data (200 GB+) at fast generation rates  
 <small>(~8.5 GB/sec i3 desktop, ~4.6 GB/sec AWS microinstance using null byte stream output on Linux)</small>.
 
-*And the point of junk data?*
+*And the purpose of junk data?*
 
 Uses:
 
@@ -44,6 +44,7 @@ Yet, I just needed something cross-platform with simple command-line options.
 
 + Linux x64
 + Windows x64
++ Mac arm64
 
 
 ## Usage <a id="usage"></a>
@@ -134,7 +135,7 @@ Multi-threading has its own speed impacts, such as thread-waiting and data strea
 
 **... and output is 'slowing down':**
 
-... apparently on my i3-4170, courtesy of the Spectre/Meltdown kernel patches.
+... apparently on my i3-4170, courtesy of the Spectre/Meltdown kernel revisions.
 
 
 ### Windows
@@ -177,6 +178,16 @@ or full process:
 ```
 
 (Default compiler is GCC. For Clang, just rename the *makefiles*.)
+
+
+### Mac
+
+Compiles on Mac with a few code changes:
+
++ Delete the line `#include <sys/sysinfo.h>` in *rnd64.h*
++ Auto-replace all instances of `__linux` to `__APPLE__` in *rnd64.h* and *rnd64.c*
++ In *rnd64.c*, change `iNumThreads = (unsigned int) get_nprocs();` to `iNumThreads = (unsigned int) sysconf(_SC_NPROCESSORS_ONLN);`
++ Rename *makefile.clang* to *makefile* and `make`
 
 ----
 
