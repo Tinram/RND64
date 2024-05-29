@@ -5,7 +5,7 @@
 
 #### Linux and Windows
 
-##### v.0.41
+##### v.0.42
 
 
 [1]: https://tinram.github.io/images/rnd64.png
@@ -255,6 +255,7 @@ Or move the RND64 executable to a location such as */usr/local/bin* (location mu
 + [Professor Melissa E. O'Neill](https://www.cs.hmc.edu/~oneill/index.html): creator of the fast [PCG](http://www.pcg-random.org/) RNG.
 + [Damir Cohadarevic](https://github.com/cohadar): inspiration, highlighting PCG.
 + [Aleksandr Sergeev](https://github.com/sergeevabc): thorough testing, recommendations.
++ [Vort](https://github.com/Vort): testing.
 + MSDN: Windows crypto.
 + Ben Alpert: microsecond timer.
 
