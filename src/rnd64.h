@@ -7,8 +7,8 @@
 	*
 	* @author        Martin Latter
 	* @copyright     Martin Latter, April 2014
-	* @version       0.41 mt
-	* @license       GNU GPL version 3.0 (GPL v3); http://www.gnu.org/licenses/gpl.html
+	* @version       0.42 mt
+	* @license       GNU GPL version 3.0 (GPL v3); https://www.gnu.org/licenses/gpl-3.0.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
 */
@@ -33,7 +33,7 @@
 
 
 /* defines */
-#define RND64_VERSION "0.41 mt"
+#define RND64_VERSION "0.42 mt"
 #define KB 0x400ULL
 #define STREAM_STATS 0 /* Win stream stats */
 

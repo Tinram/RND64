@@ -7,7 +7,7 @@
 	*
 	* @author        Martin Latter
 	* @copyright     Martin Latter, April 2014
-	* @version       0.41 mt
+	* @version       0.42 mt
 	* @license       GNU GPL version 3.0 (GPL v3); https://www.gnu.org/licenses/gpl-3.0.html
 	* @link          https://github.com/Tinram/RND64.git
 	*
@@ -676,7 +676,7 @@ void menu(char* const pFName) {
 	printf("\t\t%s [option] <size> [file]", pFName);
 	printf("\n\t\t%s [option] <size> | <prog>", pFName);
 	printf("\n\nOptions:");
-	printf("\n\t\t-a\t chars 1-255    (all)");
+	printf("\n\t\t-a\t chars 0-255    (all)");
 	printf("\n\t\t-f\t single char    (fastest)");
 	printf("\n\t\t-r\t chars 33-126   (restrict)");
 	printf("\n\t\t-c\t crypto bytes");
